@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>用户管理-一苇以航</title>
+    <title>黑名单-一苇以航</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
@@ -28,8 +28,8 @@
                     <div class="layui-card-body ">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="username" id="keyword" placeholder="请输入用户昵称" autocomplete="off"
-                                    class="layui-input">
+                                <input type="text" name="username" id="keyword" placeholder="请输入学工号" autocomplete="off"
+                                    class="layui-input"> <!--name="username" need to be updated.-->
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="search()"><i
@@ -45,10 +45,7 @@
                         </form>
                     </div>
                     <div class="layui-card-header">
-                        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除
-                        </button>
-                        <button class="layui-btn layui-btn-normal" onclick="xadmin.open('批量修改','./member-batch-edit.html',600,400)"><i
-                            class="layui-icon"></i>批量修改
+                        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量移出
                         </button>
                     </div>
                     <div class="layui-card-body layui-table-body layui-table-main">
@@ -58,14 +55,14 @@
                                     <th>
                                         <input type="checkbox" lay-filter="checkall" name="" lay-skin="primary">
                                     </th>
-                                    <th>ID</th>
+                                    <th>ID</th> <!--黑名单和用户列表显示一致-->
                                     <th>学工号</th> <!--2.0版加的显示字段-->
+                                    <th>黑名单状态</th> <!--2.0版加的显示字段-->
                                     <th>昵称</th>
                                     <th>头像</th>
                                     <th>邮箱</th>
                                     <th>签名</th>
                                     <th>违约次数</th> <!--2.0版加的显示字段-->
-                                    <th>黑名单状态</th> <!--2.0版加的显示字段-->
                                     <th>是否为院内学生</th> <!--2.0版加的显示字段-->
                                     <th>操作</th>
                                 </tr>
@@ -211,6 +208,7 @@
                 $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
                 layer.msg('已启用!', { icon: 5, time: 1000 });
             }
+
         });
     }
 
@@ -349,5 +347,4 @@
             </td>`);
     }
 </script>
-
 </html>

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>用户管理-一苇以航</title>
+    <title>场地申请审核-一苇以航</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
@@ -25,16 +25,22 @@
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md12">
                 <div class="layui-card">
-                    <div class="layui-card-body ">
+                    <div class="layui-card-body layui-table-body layui-table-main">
                         <form class="layui-form layui-col-space5">
-                            <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="username" id="keyword" placeholder="请输入用户昵称" autocomplete="off"
-                                    class="layui-input">
+                            <!-- <div class="layui-inline layui-show-xs-block">
+                                <input class="layui-input" autocomplete="off" placeholder="开始日" name="start" id="start">
                             </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="search()"><i
-                                        class="layui-icon">&#xe615;</i>
-                                </button>
+                                <input class="layui-input" autocomplete="off" placeholder="截止日" name="end" id="end">
+                            </div> -->
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="keyword" id="keyword" placeholder="请输入申请人学工号" id="searchBtn" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                            <!--change 补日历控件，靠预约范围搜索-->
+                            <div class="layui-inline layui-show-xs-block">
+                                <button type="button" class="layui-btn" lay-submit="" lay-filter="sreach" onclick="search()"><i
+                                        class="layui-icon">&#xe615;</i></button>
                             </div>
                             <div class="layui-inline layui-show-xs-block" style="float:right">
                                 <a class="layui-btn layui-btn-small" style="line-height:1.6em"
@@ -43,15 +49,6 @@
                                 </a>
                             </div>
                         </form>
-                    </div>
-                    <div class="layui-card-header">
-                        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除
-                        </button>
-                        <button class="layui-btn layui-btn-normal" onclick="xadmin.open('批量修改','./member-batch-edit.html',600,400)"><i
-                            class="layui-icon"></i>批量修改
-                        </button>
-                    </div>
-                    <div class="layui-card-body layui-table-body layui-table-main">
                         <table class="layui-table layui-form">
                             <thead>
                                 <tr>
@@ -59,15 +56,13 @@
                                         <input type="checkbox" lay-filter="checkall" name="" lay-skin="primary">
                                     </th>
                                     <th>ID</th>
-                                    <th>学工号</th> <!--2.0版加的显示字段-->
-                                    <th>昵称</th>
-                                    <th>头像</th>
-                                    <th>邮箱</th>
-                                    <th>签名</th>
-                                    <th>违约次数</th> <!--2.0版加的显示字段-->
-                                    <th>黑名单状态</th> <!--2.0版加的显示字段-->
-                                    <th>是否为院内学生</th> <!--2.0版加的显示字段-->
+                                    <th>申请人姓名</th>
+                                    <th>申请人学工号</th>
+                                    <th>场地名</th>
+                                    <th>申请时间</th>
                                     <th>操作</th>
+                                    <th>申请原因</th>
+                                    <!--<th>审批状态</th>-->
                                 </tr>
                             </thead>
                             <tbody>
@@ -151,53 +146,36 @@
             type: 3,
             icon: 1
         });
-        var search_name = getQueryVariable();
-        console.log(search_name);
-        if (search_name) {
-            $.ajax(server + 'users/search/', {
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({name: search_name}),
-            headers: headers
-            }).done(function (data) {
-                console.log(data);
-                for (var i = 0; i < data.length; i++) {
-                    member_add(data[i]);
-                }
-            }).fail(function (xhr, status) {
-                console.log(xhr);
-                console.log(status);
-                layer.msg("网络错误", { icon: 2 });
-            }).always(function () {
-                layer.close(index);
-            });
-        }
-        else {
-            $.ajax(server + 'users/', {
+        $.ajax(server + 'organizations/applications/', {
             method: 'GET',
             headers: headers
-            }).done(function (data) {
-                console.log(data);
-                for (var i = 0; i < data.length; i++) {
-                    member_add(data[i]);
-                }
-            }).fail(function (xhr, status) {
-                console.log(xhr);
-                console.log(status);
-                layer.msg("网络错误", { icon: 2 });
-            }).always(function () {
-                layer.close(index);
-            });
-        }
+        }).done(function (data) {
+            console.log(data);
+            data = data.sort(compare('pub_time'));
+            for (var i = 0; i < data.length; i++) {
+                app_add(data[i]);
+            }
+        }).fail(function (xhr, status) {
+            console.log(xhr);
+            console.log(status);
+            layer.msg("网络错误", { icon: 2 });
+        }).always(function () {
+            layer.close(index);
+        });
     });
 
+    function compare(property){
+        return function (obj1,obj2){
+            return Date.parse(obj2[property])-Date.parse(obj1[property]);
+        }
+    }
+
     /*用户-停用*/
-    function member_stop(obj, id) {
+    function app_stop(obj, id) {
         layer.confirm('确认要停用吗？', function (index) {
 
             if ($(obj).attr('title') == '启用') {
 
-                //发异步把用户状态进行更改
                 $(obj).attr('title', '停用')
                 $(obj).find('i').html('&#xe62f;');
 
@@ -211,69 +189,133 @@
                 $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
                 layer.msg('已启用!', { icon: 5, time: 1000 });
             }
+
         });
     }
 
-    function search() {
-        var url = self.location.href;
-        var search_name = getQueryVariable();
-        var value = $("#keyword").val();
-        console.log(value);
-        var end = url.indexOf('=');
-        if (end != -1) {
-            url = url.substring(0, end + 1);
-            url = url.concat(encodeURI(value));
-        }
-        else {
-            url = url.concat("?search_key=");
-            url = url.concat(encodeURI(value));
-        }
-        window.location.href = url;
-    }
 
-    function getQueryVariable() {
-        var query = window.location.search.substring(1);
-        if (query == "") {
-            console.log("No search")
-            return null;
-        }
-        var pair = query.split("=");
-        return decodeURI(pair[1]);
-    }
-
-    /*用户-删除*/
-    function member_del(obj, id) {
-        //TODO:用户不存在时如何提示？
-        layer.confirm('确认要删除吗？', function (index) {
-            //发异步删除数据
-            $.ajax(server + `users/${id}/`, {
-                method: 'DELETE',
-                headers: headers
-            }).done(function (data) {
-                $(obj).parents("tr").remove();
+    function del_req(obj, id, silence) {
+        var result = true;
+        $.ajax(server + `organizations/applications/${id}/`, {
+            method: 'DELETE',
+            headers: headers
+        }).done(function (data) {
+            $(obj).parents("tr").remove();
+            if (!silence) {
                 layer.msg('已删除!', { icon: 1, time: 1000 });
-            }).fail(function (xhr, status) {
-                console.log(xhr);
-                console.log(status);
+            }
+        }).fail(function (xhr, status) {
+            console.log(xhr);
+            console.log(status);
+            if (!silence) {
                 if (xhr.status === 404) {
-                    layer.msg('该用户不存在', { icon: 5 });
+                    layer.msg('该申请不存在', { icon: 5 });
                 }
                 else {
                     layer.msg("网络错误", { icon: 2 });
                 }
-            }).always(function () {
-                //layer.close(index);
-            });
+            }
+        }).always(function () {
+            //layer.close(index);
+        });
+        return result;
+    }
+
+    /*删除*/
+    function app_del(obj, id) {
+        //TODO:用户不存在时如何提示？
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            del_req(obj, id, false);
         });
     }
 
-    /*用户-编辑*/
-    function member_edit(obj, id) {
-        //TODO:用户不存在时如何提示？
-        localStorage.member_id_edit = id;
-        xadmin.open('编辑', 'member-edit.html', 600, 400);
+    /*审批*/
+    function app_confirm(obj, id, status, name, owner, block) {
+        //TODO:如何在审批完成后直接在页面上更新审批状态？
+        if (status === 1) {
+            /*var app_data;
+            $.ajax(server + 'organizations/applications/' + id, {
+                method: 'GET'
+            }).done(function (data) {
+                console.log(data);
+                app_data = data;
+            }).fail(function (xhr, status) {
+                console.log(xhr);
+                console.log(status);
+                layer.msg("网络错误", { icon: 2 });
+            }).always(function () {
+                layer.close(index);
+            });*/
+            var index = layer.open({ type: 3, icon: 1 });
+            var send_data = {
+                name: name,
+                owner: owner,
+                block: block
+            };
+            $.ajax(server + `organizations/applications/verifications/${id}/`, {
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({ status: status }),
+                headers: headers
+            }).done(function (data) {
+                layer.msg('审批完成', { icon: 6, time: 1000 }, function() {
+                    location.reload();
+                });
+            }).fail(function (xhr, status) {
+                if (xhr.status === 400) {
+                    layer.msg("该申请已被处理", { icon: 5 });
+                }
+                else if (xhr.status === 404) {
+                    layer.msg("该申请不存在", { icon: 5 });
+                }
+                else {
+                    console.log(xhr);
+                    console.log(status);
+                    layer.msg("网络错误", { icon: 2 });
+                }
+            }).always(function () {
+                layer.close(index);
+            });
+        }
+        else if (status === 2) {
+            $.ajax(server + `organizations/applications/verifications/${id}/`, {
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({ status: status }),
+                headers: headers
+            }).done(function (data) {
+                layer.msg('审批完成', { icon: 6, time: 1000 }, function() {
+                    location.reload();
+                });
+            }).fail(function (xhr, status) {
+                if (xhr.status === 400) {
+                    layer.msg("该申请已被处理", { icon: 5 });
+                }
+                else if (xhr.status === 404) {
+                    layer.msg("该申请不存在", { icon: 5 });
+                }
+                else {
+                    console.log(xhr);
+                    console.log(status);
+                    layer.msg("网络错误", { icon: 2 });
+                }
+            });
+        }
+        else {
+            console.log('status is' + status);
+        }
+        /*var new_data;
+        $.ajax(server + 'organizations/applications/' + id, {
+            method: 'GET',
+        }).done(function (data) {
+            new_data = data;
+        }).fail(function (xhr, status) {
+        });
+        if (new_data) {
+            app_update($(obj).parents('td'), new_data);
+        }*/
     }
-
 
     function delAll(argument) {
         var ids = [];
@@ -292,61 +334,64 @@
             //TODO：用户不存在时如何提示？
             var status = true;
             for (var i = 0; i < ids.length; i++) {
-                $.ajax(server + `users/${ids[i]}/`, {
-                    method: 'DELETE',
-                    headers: headers
-                }).done(function (data) {
-                    $(elems[i]).parents("tr").remove();
-                    //layer.msg('已删除!', { icon: 1, time: 1000 });
-                }).fail(function (xhr, status) {
-                    console.log(xhr);
-                    console.log(status);
-                    //layer.msg("网络错误");
-                    status = false;
-                }).always(function () {
-                    //layer.close(index);
-                });
+                status &= del_req(elems[i], ids[i], true);
             }
             // if (status === true) {
             layer.msg('删除成功', { icon: 1 });
             // }
             // else {
-            //     layer.msg('部分用户未能成功删除，请再次尝试', { icon: 5 });
+            // layer.msg('部分申请未能成功删除，请再次尝试', { icon: 5 });
             // }
             //$(".layui-form-checked").not('.header').parents('tr').remove();
         });
     }
 
-    function member_add(data) {
+    function app_add(data) {
         cnt++;
         var td = document.createElement('tr');
-        member_update(td, data);
+        app_update(td, data);
         tbody.appendChild(td);
         form.render('checkbox');
     }
 
-    function member_update(td, data) {
-        for (var key in data) {
-            if (data[key] == null) {
-                data[key] = '';
-            }
+    function app_update(td, data) {
+        var status;
+        if (data.status === 0) {
+            status = '待审批';
+        }
+        else if (data.status === 1) {
+            status = '审批通过';
+        }
+        else {
+            status = '审批未通过';
         }
         $(td).html(`
-            <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
+            <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary"lay-filter="authority"></td>
             <td>${data.id}</td>
             <td>${data.name}</td>
-            <td><img src="${data.avatar}"></td>
-            <td>${data.email}</td>
-            <td>${data.sign}</td>
+            <td>${data.description}</td>
+            <td>${data.pub_time}</td>
+            <td>${status}</td>
+            <td>${data.user.name}</td>
+            <td>${data.block.name}</td>
             <td class="td-manage">
-                <a title="编辑" onclick="member_edit(this,${data.id})"
+                <a title="同意" onclick="app_confirm(this,${data.id},1,'${data.name}',${data.user.id},${data.block.id})"
                 href="javascript:;">
-                    <i class="layui-icon">&#xe642;</i>
+                    <i class="layui-icon layui-icon-ok"></i>
                 </a>
-                <a title="删除" onclick="member_del(this,${data.id})" href="javascript:;">
+                <a title="拒绝" onclick="app_confirm(this,${data.id},2,'${data.name}',${data.user.id},${data.block.id})"
+                href="javascript:;">
+                    <i class="layui-icon layui-icon-close"></i>
+                </a>
+                <a title="删除" onclick="app_del(this,${data.id})" href="javascript:;">
                     <i class="layui-icon">&#xe640;</i>
                 </a>
             </td>`);
+        form.render('checkbox');
+    }
+
+    function post_edit() {
+
     }
 </script>
 

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>用户管理-一苇以航</title>
+    <title>场地列表-一苇以航</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
@@ -27,14 +27,19 @@
                 <div class="layui-card">
                     <div class="layui-card-body ">
                         <form class="layui-form layui-col-space5">
+                            <!-- <div class="layui-inline layui-show-xs-block">
+                                <input class="layui-input" autocomplete="off" placeholder="开始日" name="start" id="start">
+                            </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="username" id="keyword" placeholder="请输入用户昵称" autocomplete="off"
+                                <input class="layui-input" autocomplete="off" placeholder="截止日" name="end" id="end">
+                            </div> -->
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="keyword" id="keyword" placeholder="请输入场地名或地址" id="searchBtn" autocomplete="off"
                                     class="layui-input">
                             </div>
                             <div class="layui-inline layui-show-xs-block">
-                                <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="search()"><i
-                                        class="layui-icon">&#xe615;</i>
-                                </button>
+                                <button type="button" class="layui-btn" lay-submit="" lay-filter="sreach" onclick="search()"><i
+                                        class="layui-icon">&#xe615;</i></button>
                             </div>
                             <div class="layui-inline layui-show-xs-block" style="float:right">
                                 <a class="layui-btn layui-btn-small" style="line-height:1.6em"
@@ -45,11 +50,15 @@
                         </form>
                     </div>
                     <div class="layui-card-header">
-                        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除
+                      <button class="layui-btn" onclick="xadmin.open('添加场地','./court-add.html',600,400)"><i
+                        class="layui-icon"></i>添加
                         </button>
-                        <button class="layui-btn layui-btn-normal" onclick="xadmin.open('批量修改','./member-batch-edit.html',600,400)"><i
+                        <button class="layui-btn layui-btn-normal" onclick="xadmin.open('批量修改','./court-batch-edit.html',600,400)"><i
                             class="layui-icon"></i>批量修改
                         </button>
+                        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除
+                        </button>
+                        
                     </div>
                     <div class="layui-card-body layui-table-body layui-table-main">
                         <table class="layui-table layui-form">
@@ -59,14 +68,13 @@
                                         <input type="checkbox" lay-filter="checkall" name="" lay-skin="primary">
                                     </th>
                                     <th>ID</th>
-                                    <th>学工号</th> <!--2.0版加的显示字段-->
-                                    <th>昵称</th>
-                                    <th>头像</th>
-                                    <th>邮箱</th>
-                                    <th>签名</th>
-                                    <th>违约次数</th> <!--2.0版加的显示字段-->
-                                    <th>黑名单状态</th> <!--2.0版加的显示字段-->
-                                    <th>是否为院内学生</th> <!--2.0版加的显示字段-->
+                                    <th>场地名</th>
+                                    <th>所在区域</th>
+                                    <th>价格</th>
+                                    <th>是否要预约</th>
+                                    <th>开放时间</th>
+                                    <th>图片</th>
+                                    <th>管理员</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -95,8 +103,9 @@
 <script>
     headers = { 'token': localStorage.token };
     var cnt, tbody;
-    layui.use(['laydate', 'form'], function () {
-        var laydate = layui.laydate;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var laydate = layui.laydate,
+            table = layui.table;
         window.form = layui.form;
 
         cnt = 0;
@@ -139,7 +148,8 @@
 
         //执行一个laydate实例
         laydate.render({
-            elem: '#start' //指定元素
+            elem: '#start', //指定元素
+            trigger: 'click',
         });
 
         //执行一个laydate实例
@@ -154,15 +164,16 @@
         var search_name = getQueryVariable();
         console.log(search_name);
         if (search_name) {
-            $.ajax(server + 'users/search/', {
+            $.ajax(server + 'activities/search/', {
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({name: search_name}),
             headers: headers
             }).done(function (data) {
                 console.log(data);
+                data = data.sort(compare('pub_time'));
                 for (var i = 0; i < data.length; i++) {
-                    member_add(data[i]);
+                    activity_add(data[i]);
                 }
             }).fail(function (xhr, status) {
                 console.log(xhr);
@@ -173,13 +184,14 @@
             });
         }
         else {
-            $.ajax(server + 'users/', {
+            $.ajax(server + 'activities/', {
             method: 'GET',
             headers: headers
             }).done(function (data) {
                 console.log(data);
+                data = data.sort(compare('pub_time'));
                 for (var i = 0; i < data.length; i++) {
-                    member_add(data[i]);
+                    activity_add(data[i]);
                 }
             }).fail(function (xhr, status) {
                 console.log(xhr);
@@ -189,15 +201,49 @@
                 layer.close(index);
             });
         }
+
+        var a = table.render({
+            elem: "#test"
+        });
+
+        $('#searchBtn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        var active = {
+            reload: function () {
+                var demoReload = $('#demoReload');	//得到搜索框里已输入的数据   	      
+                //执行重载
+                table.reload('test', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        name: demoReload.val()		//在表格中进行搜索
+                    }
+                });
+            }
+        };
+
+        //   $('#btn .layui-btn').on('click', function(){
+        //     var type = $(this).data('type');
+        //     active[type] ? active[type].call(this) : '';
+        //   });
     });
 
+    function compare(property){
+        return function (obj1,obj2){
+            return Date.parse(obj2[property])-Date.parse(obj1[property]);
+        }
+    }
+
     /*用户-停用*/
-    function member_stop(obj, id) {
+    function app_stop(obj, id) {
         layer.confirm('确认要停用吗？', function (index) {
 
             if ($(obj).attr('title') == '启用') {
 
-                //发异步把用户状态进行更改
                 $(obj).attr('title', '停用')
                 $(obj).find('i').html('&#xe62f;');
 
@@ -211,6 +257,7 @@
                 $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
                 layer.msg('已启用!', { icon: 5, time: 1000 });
             }
+
         });
     }
 
@@ -241,39 +288,49 @@
         return decodeURI(pair[1]);
     }
 
-    /*用户-删除*/
-    function member_del(obj, id) {
+
+    function activity_edit(obj, id) {
         //TODO:用户不存在时如何提示？
-        layer.confirm('确认要删除吗？', function (index) {
-            //发异步删除数据
-            $.ajax(server + `users/${id}/`, {
-                method: 'DELETE',
-                headers: headers
-            }).done(function (data) {
-                $(obj).parents("tr").remove();
+        localStorage.activity_id_edit = id;
+        xadmin.open('编辑', 'activity-edit.html', 600, 400);
+    }
+
+    function del_req(obj, id, silence) {
+        var result = false;
+        $.ajax(server + `activities/${id}/`, {
+            method: 'DELETE',
+            headers: headers
+        }).done(function (data) {
+            $(obj).parents("tr").remove();
+            if (!silence) {
                 layer.msg('已删除!', { icon: 1, time: 1000 });
-            }).fail(function (xhr, status) {
-                console.log(xhr);
-                console.log(status);
+            }
+            result = true;
+        }).fail(function (xhr, status) {
+            console.log(xhr);
+            console.log(status);
+            if (!silence) {
                 if (xhr.status === 404) {
-                    layer.msg('该用户不存在', { icon: 5 });
+                    layer.msg('该活动不存在', { icon: 5 });
                 }
                 else {
                     layer.msg("网络错误", { icon: 2 });
                 }
-            }).always(function () {
-                //layer.close(index);
-            });
+            }
+        }).always(function () {
+            //layer.close(index);
+        });
+        return result;
+    }
+
+    /*删除*/
+    function activity_del(obj, id) {
+        //TODO:用户不存在时如何提示？
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            del_req(obj, id, false);
         });
     }
-
-    /*用户-编辑*/
-    function member_edit(obj, id) {
-        //TODO:用户不存在时如何提示？
-        localStorage.member_id_edit = id;
-        xadmin.open('编辑', 'member-edit.html', 600, 400);
-    }
-
 
     function delAll(argument) {
         var ids = [];
@@ -292,61 +349,75 @@
             //TODO：用户不存在时如何提示？
             var status = true;
             for (var i = 0; i < ids.length; i++) {
-                $.ajax(server + `users/${ids[i]}/`, {
-                    method: 'DELETE',
-                    headers: headers
-                }).done(function (data) {
-                    $(elems[i]).parents("tr").remove();
-                    //layer.msg('已删除!', { icon: 1, time: 1000 });
-                }).fail(function (xhr, status) {
-                    console.log(xhr);
-                    console.log(status);
-                    //layer.msg("网络错误");
-                    status = false;
-                }).always(function () {
-                    //layer.close(index);
-                });
+                status &= del_req(elems[i], ids[i], true);
             }
             // if (status === true) {
             layer.msg('删除成功', { icon: 1 });
             // }
             // else {
-            //     layer.msg('部分用户未能成功删除，请再次尝试', { icon: 5 });
+            //     layer.msg('部分活动未能成功删除，请再次尝试', { icon: 5 });
             // }
             //$(".layui-form-checked").not('.header').parents('tr').remove();
         });
     }
 
-    function member_add(data) {
+    function activity_add(data) {
         cnt++;
         var td = document.createElement('tr');
-        member_update(td, data);
+        activity_update(td, data);
         tbody.appendChild(td);
         form.render('checkbox');
     }
 
-    function member_update(td, data) {
+    function activity_update(td, data) {
         for (var key in data) {
-            if (data[key] == null) {
+            if (key === 'review') {
+                if (data[key]) {
+                    data[key] = '是';
+                }
+                else {
+                    data[key] = '否';
+                }
+            }
+            else if (key === 'org') {
+                if (data[key] == null) {
+                    data[key] = '无';
+                }
+                else {
+                    data[key] = data[key].name;
+                }
+            }
+            else if (data[key] == null) {
                 data[key] = '';
             }
         }
+        var type='无';
+        if(data.type){
+            type=data.type.name;
+        }
         $(td).html(`
-            <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
+            <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary"lay-filter="authority"></td>
             <td>${data.id}</td>
             <td>${data.name}</td>
-            <td><img src="${data.avatar}"></td>
-            <td>${data.email}</td>
-            <td>${data.sign}</td>
+            <td>${data.owner.name}</td>
+            <td>开始 ${data.begin_time}<br>结束 ${data.end_time}</td>
+            <td>${data.pub_time}</td>
+            <td>${data.description}</td>
+            <td>${data.contain}</td>
+            <td>${type}</td>
+            <td>${data.location.name}</td>
+            <td>${data.org}</td>
+            <td>${data.block.name}</td>
             <td class="td-manage">
-                <a title="编辑" onclick="member_edit(this,${data.id})"
+                <a title="编辑" onclick="activity_edit(this,${data.id})"
                 href="javascript:;">
                     <i class="layui-icon">&#xe642;</i>
                 </a>
-                <a title="删除" onclick="member_del(this,${data.id})" href="javascript:;">
+                <a title="删除" onclick="activity_del(this,${data.id})" href="javascript:;">
                     <i class="layui-icon">&#xe640;</i>
                 </a>
             </td>`);
+        form.render('checkbox');
     }
 </script>
 

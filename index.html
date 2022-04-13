@@ -169,11 +169,29 @@
                     </ul>
                 </li> -->
                 <li>
-                    <a href="javascript:;" onclick="xadmin.add_tab('用户管理','member-list.html')">
+                    <a href="javascript:;" onclick="xadmin.add_tab('用户列表','member-list.html')">
                         <!--                        <i class="iconfont left-nav-li layui-icon-username" lay-tips="用户管理"></i>-->
                         <i class="iconfont left-nav-li" lay-tips="用户管理">&#xe723;</i>
                         <cite>用户管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
                     </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a onclick="xadmin.add_tab('用户列表','member-list.html')">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>用户列表</cite></a>
+                        </li>
+                        <li>
+                            <a onclick="xadmin.add_tab('用户审核','member-confirm.html')">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>用户审核</cite></a>
+                        </li>
+                        <li>
+                            <a onclick="xadmin.add_tab('黑名单','member-blacklist.html')">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>黑名单</cite></a>
+                        </li>
+                    </ul>
                 </li>
                 <li>
                     <a href="javascript:;" onclick="xadmin.add_tab('版块管理','block-list.html')">
@@ -222,6 +240,31 @@
                         <i class="iconfont left-nav-li" lay-tips="反馈管理">&#xe723;</i>
                         <cite>反馈管理</cite>
                     </a>
+                </li>
+                <li>
+                    <a href="javascript:;" onclick="xadmin.add_tab('场地列表','court-list.html')">
+                        <!--                        <i class="iconfont left-nav-li layui-icon-username" lay-tips="用户管理"></i>-->
+                        <i class="iconfont left-nav-li" lay-tips="场地管理">&#xe723;</i>
+                        <cite>场地管理</cite>
+                        <i class="iconfont nav_right">&#xe697;</i>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a onclick="xadmin.add_tab('场地列表','court-list.html')">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>场地列表</cite></a>
+                        </li>
+                        <li>
+                            <a onclick="xadmin.add_tab('场地申请审核','court-application-confirm.html')">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>场地申请审核</cite></a>
+                        </li>
+                        <li>
+                            <a onclick="xadmin.add_tab('场地预约管理','court-booking-list.html')">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>场地预约管理</cite></a>
+                        </li>
+                    </ul>
                 </li>
                 <!-- <li>
                     <a href="javascript:;">
