@@ -25,7 +25,7 @@
         <div class="layui-row">
             <form class="layui-form">
                 <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
+                    <label for="L_name" class="layui-form-label">
                         <span class="x-red">*</span>场地名</label>
                     <div class="layui-input-inline">
                         <input type="text" id="L_name" name="name" lay-verify="required|limit100" autocomplete="off"
@@ -34,55 +34,66 @@
                 </div>
                 <div class="layui-form-item">
                     <label for="L_email" class="layui-form-label">
-                        <span class="x-red">*</span>场地类别</label>
+                        <span class="x-red">*</span>所属区域</label>
                     <div class="layui-input-inline">
-                        <select name="review" lay-verify="required">
+                        <select name="area" lay-verify="required">
                             <option value=""></option>
+                            <option value="新主F楼">新主F楼</option>
+                            <option value="教学楼1">教学楼1</option>
+                            <option value="羽毛球场">羽毛球场</option>
+                            <option value="乒乓球场">乒乓球场</option>
                         </select>
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
+                    <label for="L_price" class="layui-form-label">
+                        <span class="x-red">*</span>价格</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="price" lay-verify="required|positive_number" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="L_apply_needed" class="layui-form-label">
+                        <span class="x-red">*</span>预约时是否要申请</label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="apply_needed" value=True title="是" checked>
+                            <input type="radio" name="apply_needed" value=False title="否">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="L_begin_time" class="layui-form-label">
                         <span class="x-red">*</span>开始时间</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="L_begin_time" name="begin_time" lay-verify="required|time"
+                        <input type="text" id="L_begin_time" name="begin_time" lay-verify="required"
                             autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
+                    <label for="L_end_time" class="layui-form-label">
                         <span class="x-red">*</span>结束时间</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="L_end_time" name="end_time" lay-verify="required|time" autocomplete="off"
+                        <input type="text" id="L_end_time" name="end_time" lay-verify="required" autocomplete="off"
                             class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
-                        <span class="x-red">*</span>价格</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="contain" lay-verify="required|positive_int" autocomplete="off"
-                            class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
-                        <span class="x-red">*</span>预约时是否要申请</label>
-                    <div class="layui-input-inline">
-                        <select name="review" lay-verify="required">
-                            <option value=""></option>
-                            <option value="true">是</option>
-                            <option value="false">否</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
-                        场地图片</label>
+                    <label for="L_description" class="layui-form-label">描述</label>
                     <div class="layui-input-inline">
                         <input type="text" name="description" lay-verify="limit500" autocomplete="off"
                             class="layui-input">
                     </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="L_image" class="layui-form-label">场地图片</label>
+                    <button type="button" class="layui-btn" id="L_upload_image">
+                        <i class="layui-icon" id="L_upload_image">&#xe67c;</i>上传图片
+                      </button>
+                      <!--
+                    <div class="layui-input-inline">
+                        <input type="text" name="avatar" lay-verify="limit500" autocomplete="off"
+                            class="layui-input">
+                    </div>-->
                 </div>
                 <div class="layui-form-item">
                     <label for="L_repass" class="layui-form-label"></label>
@@ -93,7 +104,7 @@
     </div>
     <script>
         headers = { 'token': localStorage.token };
-        layui.use(['form', 'layer', 'jquery', 'laydate'],
+        layui.use(['form', 'layer', 'jquery', 'laydate', 'upload'],
             function () {
                 $ = layui.jquery;
                 var form = layui.form,
@@ -101,101 +112,62 @@
                     laydate = layui.laydate;
                 window.form = form;
 
-                var owner_ok = false, type_ok = false, addr_ok = false;
-
-                var owner = $('#L_owner');
-                var index = layer.open({ type: 3, icon: 1 });
-                $.ajax(server + 'users/', {
-                    method: 'GET',
-                    headers: headers
-                }).done(function (data) {
-                    console.log(data);
-                    for (var i = 0; i < data.length; i++) {
-                        insert_option(form, owner, data[i].id, `${data[i].name}(${data[i].id})`);
-                    }
-                    form.render('select');
-                }).fail(function (xhr, status) {
-                    console.log(xhr);
-                    console.log(status);
-                    layer.msg("网络错误", { icon: 2 });
-                }).always(function () {
-                    owner_ok = true;
-                    if (owner_ok && type_ok && addr_ok) {
-                        layer.close(index);
-                    }
-                });
-
-                var block = $('#L_block');
-                $.ajax(server + 'blocks/', {
-                    method: 'GET',
-                    headers: headers
-                }).done(function (data) {
-                    console.log(data);
-                    for (var i = 0; i < data.length; i++) {
-                        insert_option(form, block, data[i].id, `${data[i].name}(${data[i].id})`);
-                    }
-                    form.render('select');
-                }).fail(function (xhr, status) {
-                    console.log(xhr);
-                    console.log(status);
-                    layer.msg("网络错误", { icon: 2 });
-                }).always(function () {
-                });
-
-                var type = $('#L_type');
-                $.ajax(server + 'activities/categories/', {
-                    method: 'GET',
-                    headers: headers
-                }).done(function (data) {
-                    console.log(data);
-                    for (var i = 0; i < data.length; i++) {
-                        insert_option(form, type, data[i].id, `${data[i].name}(${data[i].id})`);
-                    }
-                    form.render('select');
-                }).fail(function (xhr, status) {
-                    console.log(xhr);
-                    console.log(status);
-                    layer.msg("网络错误", { icon: 2 });
-                }).always(function () {
-                    type_ok = true;
-                    if (owner_ok && type_ok && addr_ok) {
-                        layer.close(index);
-                    }
-                });
-
-                var location = $('#L_location');
-                $.ajax(server + 'activities/addresses/', {
-                    method: 'GET',
-                    headers: headers
-                }).done(function (data) {
-                    console.log(data);
-                    for (var i = 0; i < data.length; i++) {
-                        insert_option(form, location, data[i].id, `${data[i].name}(${data[i].id})`);
-                    }
-                    form.render('select');
-                }).fail(function (xhr, status) {
-                    console.log(xhr);
-                    console.log(status);
-                    layer.msg("网络错误", { icon: 2 });
-                }).always(function () {
-                    addr_ok = true;
-                    if (owner_ok && type_ok && addr_ok) {
-                        layer.close(index);
-                    }
-                });
+                //监听提交
+                form.on('submit(add)',
+                    function (data) {
+                        console.log(data);
+                        $.ajax(server + `add_ground/`, {
+                            method: 'POST',
+                            data: JSON.stringify(data.field),
+                            contentType: 'application/json',
+                            headers: headers
+                        }).done(function (data) {
+                            layer.alert("添加场地成功", {
+                                icon: 1,
+                                title: '提示'
+                            }, function (index) {
+                                layer.close(index);		 	
+                                setTimeout(function () { 
+                                    $(".container").addClass("hidden");
+                                    $(".page3").removeClass("hidden");
+                                }, 500)
+                                //关闭当前frame
+                                // xadmin.close();
+                                // 可以对父窗口进行刷新 
+                                //xadmin.father_reload();
+                            });
+                        }).fail(function (xhr, status) {
+                            console.log(xhr);
+                            console.log(status);
+                            if (xhr.status === 400) {
+                                layer.msg(`场地 ${data.field.name} 已存在`, { icon: 5 });
+                            }
+                            else {
+                                layer.msg("网络错误", { icon: 2 });
+                            }
+                        }).always(function () {
+                            //layer.close(index);
+                        });
+                        return false;
+                    });
 
                 laydate.render({
                     elem: '#L_begin_time',
-                    type: 'datetime',
-                    format: 'yyyy-MM-ddTHH:mm:ss',
+                    type: 'time',
+                    format: 'HH点mm分',
                     trigger: 'click',
                 })
 
                 laydate.render({
                     elem: '#L_end_time',
+                    type: 'time',
+                    format: 'HH点mm分',
+                    trigger: 'click',
+                    /*
                     type: 'datetime',
                     format: 'yyyy-MM-ddTHH:mm:ss',
                     trigger: 'click',
+                    */
                 })
 
 
@@ -212,6 +184,7 @@
                             return '长度不能超过500个字符';
                         }
                     },
+                    /*
                     time: function (value, item) {
                         if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(value)) {
                             return '时间格式必须为yyyy-MM-ddTHH:mm:ss';
@@ -221,21 +194,40 @@
                             return '时间范围非法';
                         }
                     },
-                    positive_int: function (value, item) {
+                    */
+                    positive_number: function (value, item) {
                         console.log(value);
-                        if (!/^\d*$/.test(value) || parseInt(value) <= 0) {
-                            return '人数必须是正整数';
-                        }
-                        if (parseInt(value) > 100000) {
-                            return '人数不能超过100000';
+                        console.log(parseFloat(value));
+                        if (parseFloat(value) == NaN || parseFloat(value) <= 0) {
+                            return '价格必须为大于等于0的数字';
                         }
                     }
                 });
+
+                var upload = layui.upload;
+   
+                //执行实例
+                var uploadInst = upload.render({
+                    elem: '#L_upload_image'
+                    ,url: 'image/'
+                    ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                        layer.load(); //上传loading
+                    }
+                    ,done: function(res, index, upload){
+                        layer.closeAll('loading'); //关闭loading
+                    }
+                    ,error: function(index, upload){
+                        layer.closeAll('loading'); //关闭loading
+                    }
+                    });    
 
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
                         console.log(data);
+                        /* 先不做时间验证
+                        var timeCheck = time_check(data.field.begin_time, data.field.end_time);
+                        console.log("timeCheck:" + timeCheck);
                         if (!time_check(data.field.begin_time, data.field.end_time)) {
                             layer.msg('开始时间不能晚于结束时间', {
                                 icon: 5,
@@ -243,13 +235,14 @@
                             })
                             return false;
                         }
-                        $.ajax(server + 'activities/', {
+                        */
+                        $.ajax(server + 'web/ground/add_ground/', {
                             method: 'POST',
                             contentType: 'application/json',
                             data: JSON.stringify(data.field),
                             headers: headers
                         }).done(function (data) {
-                            layer.alert("增加成功", {
+                            layer.alert("增加场地成功", {
                                 icon: 1,
                                 title: '提示'
                             }, function (index) {
@@ -269,7 +262,7 @@
                             console.log(xhr);
                             console.log(status);
                             if (xhr.status === 400) {
-                                layer.msg(`活动 ${data.field.name} 已存在`, { icon: 5 });
+                                layer.msg(`场地 ${data.field.name} 已存在`, { icon: 5 });
                             } else {
                                 layer.msg("网络错误", { icon: 2 });
                             }
@@ -279,6 +272,7 @@
                         return false;
                     });
 
+                /* todo: 回调有什么area    
                 var org = $('#L_org');
                 form.on('select(block_select)', function (data) {
                     var index = layer.open({ type: 3, icon: 1 });
@@ -309,6 +303,7 @@
                         layer.close(index);
                     });
                 });
+                */
             });
     </script>
 </body>

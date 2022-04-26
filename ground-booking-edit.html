@@ -25,10 +25,10 @@
     <div class="layui-row">
         <form class="layui-form">
             <div class="layui-form-item">
-                <label for="L_id" class="layui-form-label">
+                <label for="#L_student_id" class="layui-form-label">
                     预约人学工号</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="L_id" autocomplete="off" class="layui-input" disabled="disabled"
+                    <input type="text" id="L_student_id" name="student_id" autocomplete="off" class="layui-input" disabled="disabled"
                            style="background:#d6d6d6">
                 </div>
                 <div class="layui-form-mid layui-word-aux">
@@ -36,10 +36,10 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="L_id" class="layui-form-label">
+                <label for="L_name" class="layui-form-label">
                     预约人姓名</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="L_id" autocomplete="off" class="layui-input" disabled="disabled"
+                    <input type="text" id="L_name" name="name" autocomplete="off" class="layui-input" disabled="disabled"
                            style="background:#d6d6d6">
                 </div>
                 <div class="layui-form-mid layui-word-aux">
@@ -47,10 +47,10 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="L_id" class="layui-form-label">
-                    原场地及时间段</label>
+                <label for="L_ground_name" class="layui-form-label">
+                    场地名</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="L_id" autocomplete="off" class="layui-input" disabled="disabled"
+                    <input type="text" id="L_ground_name" name="ground_name" autocomplete="off" class="layui-input" disabled="disabled"
                            style="background:#d6d6d6">
                 </div>
                 <div class="layui-form-mid layui-word-aux">
@@ -58,21 +58,60 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="L_email" class="layui-form-label">
+                <label for="L_old_date" class="layui-form-label">
+                    <span class="x-red">*</span>原预约日期</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_old_begin_time" name="old_begin_time" autocomplete="off" class="layui-input" disabled="disabled"
+                            style="background:#d6d6d6">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>自动填入
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="L_old_begin_time" class="layui-form-label">
+                    原开始时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_old_begin_time" name="old_begin_time" autocomplete="off" class="layui-input" disabled="disabled"
+                           style="background:#d6d6d6">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>自动填入
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="L_old_end_time" class="layui-form-label">
+                    原结束时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_old_begin_time" name="old_end_time" autocomplete="off" class="layui-input" disabled="disabled"
+                           style="background:#d6d6d6">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>自动填入
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item">
+                <label for="L_new_date" class="layui-form-label">
                     <span class="x-red">*</span>新预约日期</label>
                 <div class="layui-input-inline">
-                    <select id="L_owner" name="owner" lay-verify="required" lay-search>
-                        <option value=""></option>
-                    </select>
+                    <input type="text" id="L_new_date" name="new_date" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="L_email" class="layui-form-label">
-                    <span class="x-red">*</span>新预约时间段</label>
+                <label for="L_new_begin_time" class="layui-form-label">
+                    <span class="x-red">*</span>新开始时间</label>
                 <div class="layui-input-inline">
-                    <select id="L_owner" name="owner" lay-verify="required" lay-search>
-                        <option value=""></option>
-                    </select>
+                    <input type="text" id="L_new_begin_time" name="new_begin_time" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="L_new_end_time" class="layui-form-label">
+                    <span class="x-red">*</span>新结束时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_new_end_time" name="new_end_time" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -84,26 +123,30 @@
 </div>
 <script>
     headers = {'token': localStorage.token};
-    layui.use(['form', 'layer'],
+    layui.use(['form', 'layer', 'jquery', 'laydate'],
         function () {
-            var id = localStorage.member_id_edit;
-            localStorage.removeItem('member_id_edit');
+            var id = localStorage.ground_booking_id_edit;
+            localStorage.removeItem('ground_booking_id_edit');
             console.log(id);
             $ = layui.jquery;
             var form = layui.form,
                 layer = layui.layer;
+                laydate = layui.laydate;
+            
+            window.form = form;
 
+            // 数据回显
             if (id == null) {
                 layer.msg('ID错误', {icon: 5});
             } else {
                 var index = layer.open({type: 3, icon: 1});
-                $.ajax(server + `users/${id}/`, {
+                $.ajax(server + `web/ground_verify/${id}/`, {
                     method: 'GET',
                     headers: headers
                 }).done(function (data) {
-                    $('#L_id').val(data.id);
+                    $('#L_student_id').val(data.student_id);
                     $('#L_name').val(data.name);
-                    $('#L_avatar').val(data.avatar);
+                    $('#L_ground_id').val(data.avatar);
                     $('#L_email').val(data.email);
                     $('#L_sign').val(data.sign);
                 }).fail(function (xhr, status) {
@@ -164,6 +207,65 @@
                     });
                     return false;
                 });
+
+            laydate.render({
+                elem: '#L_new_date',
+                type: 'date',
+                format: 'yyyy-MM-dd',
+                trigger: 'click',
+            })
+            
+            laydate.render({
+                elem: '#L_new_begin_time',
+                type: 'time',
+                format: 'HH点mm分',
+                trigger: 'click',
+            })
+
+            laydate.render({
+                elem: '#L_new_end_time',
+                type: 'time',
+                format: 'HH点mm分',
+                trigger: 'click',
+                /*
+                type: 'datetime',
+                format: 'yyyy-MM-ddTHH:mm:ss',
+                trigger: 'click',
+                */
+            })
+
+            //自定义验证规则
+            var date = new Date();
+            form.verify({
+                limit100: function (value) {
+                    if (value.length > 100) {
+                        return '长度不能超过100个字符';
+                    }
+                },
+                limit500: function (value) {
+                    if (value.length > 500) {
+                        return '长度不能超过500个字符';
+                    }
+                },
+                /*
+                time: function (value, item) {
+                    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(value)) {
+                        return '时间格式必须为yyyy-MM-ddTHH:mm:ss';
+                    }
+                    timestamp = Date.parse(value);
+                    if (isNaN(timestamp)) {
+                        return '时间范围非法';
+                    }
+                },
+                */
+                positive_number: function (value, item) {
+                    console.log(value);
+                    console.log(parseFloat(value));
+                    if (parseFloat(value) == NaN || parseFloat(value) <= 0) {
+                        return '价格必须为大于等于0的数字';
+                    }
+                }
+            });
 
         });</script>
 

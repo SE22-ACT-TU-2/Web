@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+    <meta charset="UTF-8">
+    <title>场地申请审核详情-一苇以航</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <script src="./js/app.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label for="L_student_id" class="layui-form-label">
+                    学工号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_student_id" name="student_id" autocomplete="off" class="layui-input" disabled="disabled"
+                           style="background:#d6d6d6">
+                </div>
+                <!--
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>ID唯一且不可更改
+                </div>-->
+            </div>
+            <div class="layui-form-item">
+                <label for="L_name" class="layui-form-label"> 姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_name" name="name" autocomplete="off"
+                           class="layui-input" disabled="disabled"
+                           style="background:#d6d6d6">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="L_area" class="layui-form-label"> 申请场地名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_area" name="area" autocomplete="off"
+                           class="layui-input" disabled="disabled"
+                           style="background:#d6d6d6">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="L_begin_time" class="layui-form-label"> 开始时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_begin_time" name="begin_time" autocomplete="off"
+                           class="layui-input" disabled="disabled"
+                           style="background:#d6d6d6">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="L_end_time" class="layui-form-label"> 结束时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_end_time" name="end_time" autocomplete="off"
+                           class="layui-input" disabled="disabled"
+                           style="background:#d6d6d6">
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label for="L_file" class="layui-form-label">
+                    审核材料</label>
+                <img id="L_file" height = 150, weight = 150/> 
+            </div>
+            <div class="layui-form-item">
+                <label for="L_verify_choices" class="layui-form-label"> 
+                    审核结果 <span class="x-red">*</span></label>
+                <input type="radio" name="pass" value="true" title="通过/全部通过" checked>
+                <input type="radio" name="pass" value="false" title="不通过/全部不通过">
+            </div>
+            <div class="layui-form-item">
+                <label for="L_feedback" class="layui-form-label">审核反馈</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="feedback" lay-verify="limit500" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+            <!--通过/不通过-->
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label"></label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script>
+    headers = {'token': localStorage.token};
+    layui.use(['form', 'layer'],
+        function () {
+            var id = localStorage.ground_application_confirm_id_edit;
+            localStorage.removeItem('ground_application_confirm_id_edit');
+            console.log(id);
+            $ = layui.jquery;
+            var form = layui.form,
+                layer = layui.layer;
+
+            if (id == null) {
+                layer.msg('ID错误', {icon: 5});
+            } else {
+                var index = layer.open({type: 3, icon: 1});
+                $.ajax(server + `web/ground_verify/${id}/`, {
+                    method: 'GET', //场地审核信息获取
+                    headers: headers
+                }).done(function (data) {
+                    console.log("ground-application-confirm-verify信息回显\n");
+                    console.log(data);
+                    console.log(data[0].user_id.student_id);
+                    $('#L_student_id').val(data[0].user_id.student_id);
+                    $('#L_name').val(data[0].user_id.name);
+                    $('#L_area').val(data[0].ground_id.name);
+                    $('#L_begin_time').val(data[0].begin_time);
+                    $('#L_end_time').val(data[0].end_time);
+                    var image_src = "images/"+data[0].avatar;
+                    document.getElementById("L_file").src = image_src;
+                    //$('#L_student_card_image').append("<img src=" + image_src +" height = 100, weight = 100/>");
+                    //$('#L_avatar').val(data[0].avatar);
+                }).fail(function (xhr, status) {
+                    console.log(xhr);
+                    console.log(status);
+                    if (xhr.status === 404) {
+                        layer.msg('该用户不存在', {icon: 5});
+                    } else {
+                        layer.msg("网络错误", {icon: 2});
+                    }
+                }).always(function () {
+                    layer.close(index);
+                });
+            }
+            
+
+            //监听提交
+            form.on('submit(add)',
+                function (data) {
+                    console.log(data.field);
+                    var index = layer.open({type: 3, icon: 1});
+                    var index = layer.open({type: 3, icon: 1});
+                $.ajax(server + `web/ground_verify/${id}/`, {
+                    method: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data.field),
+                    headers: headers
+                }).done(function (data) {
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        member_add(data[i]);
+                    }
+
+                }).fail(function (xhr, status) {
+                    console.log(data);
+                    console.log(xhr);
+                    console.log(status);
+                    if (xhr.status === 404) {
+                        layer.msg('该用户不存在', {icon: 5});
+                    } else {
+                        layer.msg("网络错误", {icon: 2});
+                    }
+                }).always(function () {
+                    layer.close(index);
+                });
+                    return false;
+                });
+
+        });</script>
+
+
+
+</html>

@@ -60,10 +60,12 @@
                                     </th>
                                     <th>ID</th>
                                     <th>学工号</th> <!--2.0版加的显示字段-->
+                                    <th>姓名</th> <!--2.0版加的显示字段-->
                                     <th>昵称</th>
                                     <th>头像</th>
                                     <th>邮箱</th>
                                     <th>签名</th>
+                                    <th>钱包</th> <!--2.0版加的显示字段-->
                                     <th>违约次数</th> <!--2.0版加的显示字段-->
                                     <th>黑名单状态</th> <!--2.0版加的显示字段-->
                                     <th>是否为院内学生</th> <!--2.0版加的显示字段-->
@@ -71,7 +73,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-
                             </tbody>
                         </table>
                     </div>
@@ -92,9 +93,11 @@
         </div>
     </div>
 </body>
+
 <script>
     headers = { 'token': localStorage.token };
     var cnt, tbody;
+    // 使用表单
     layui.use(['laydate', 'form'], function () {
         var laydate = layui.laydate;
         window.form = layui.form;
@@ -251,6 +254,7 @@
                 headers: headers
             }).done(function (data) {
                 $(obj).parents("tr").remove();
+                
                 layer.msg('已删除!', { icon: 1, time: 1000 });
             }).fail(function (xhr, status) {
                 console.log(xhr);
@@ -265,6 +269,7 @@
                 //layer.close(index);
             });
         });
+        
     }
 
     /*用户-编辑*/
@@ -273,7 +278,6 @@
         localStorage.member_id_edit = id;
         xadmin.open('编辑', 'member-edit.html', 600, 400);
     }
-
 
     function delAll(argument) {
         var ids = [];
@@ -331,13 +335,23 @@
                 data[key] = '';
             }
         }
+
+        var inBlacklist = data['defaults_number'] ? true : false;
+        
         $(td).html(`
             <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
             <td>${data.id}</td>
+            <td>${data.student_id}</td>
+            <td>${data.real_name}</td>
             <td>${data.name}</td>
             <td><img src="${data.avatar}"></td>
             <td>${data.email}</td>
             <td>${data.sign}</td>
+            <td>${data.money}</td>
+            <td>${data.defaults_number}</td>
+            <td>${inBlacklist}</td>
+            <td>${data.is_csstd}</td>
+        
             <td class="td-manage">
                 <a title="编辑" onclick="member_edit(this,${data.id})"
                 href="javascript:;">

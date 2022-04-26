@@ -28,7 +28,7 @@
                     <div class="layui-card-body ">
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
-                                <input type="text" name="username" id="keyword" placeholder="请输入学工号" autocomplete="off"
+                                <input type="text" name="student_id" id="keyword" placeholder="请输入用户昵称" autocomplete="off"
                                     class="layui-input"> <!--name="username" need to be updated.-->
                             </div>
                             <div class="layui-inline layui-show-xs-block">
@@ -45,7 +45,7 @@
                         </form>
                     </div>
                     <div class="layui-card-header">
-                        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量移出
+                        <button class="layui-btn layui-btn-danger" onclick="removeFromBlacklist()"><i class="layui-icon"></i>批量移出
                         </button>
                     </div>
                     <div class="layui-card-body layui-table-body layui-table-main">
@@ -57,12 +57,12 @@
                                     </th>
                                     <th>ID</th> <!--黑名单和用户列表显示一致-->
                                     <th>学工号</th> <!--2.0版加的显示字段-->
-                                    <th>黑名单状态</th> <!--2.0版加的显示字段-->
                                     <th>昵称</th>
                                     <th>头像</th>
                                     <th>邮箱</th>
                                     <th>签名</th>
                                     <th>违约次数</th> <!--2.0版加的显示字段-->
+                                    <th>黑名单状态</th> <!--2.0版加的显示字段-->
                                     <th>是否为院内学生</th> <!--2.0版加的显示字段-->
                                     <th>操作</th>
                                 </tr>
@@ -92,7 +92,7 @@
 <script>
     headers = { 'token': localStorage.token };
     var cnt, tbody;
-    layui.use(['laydate', 'form'], function () {
+    layui.use(['laydate', 'form'], function () { //? do I need to use other things?
         var laydate = layui.laydate;
         window.form = layui.form;
 
@@ -151,7 +151,8 @@
         var search_name = getQueryVariable();
         console.log(search_name);
         if (search_name) {
-            $.ajax(server + 'users/search/', {
+            $.ajax(server + 'users/blackList/search/', { // change here?
+
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({name: search_name}),
@@ -170,7 +171,7 @@
             });
         }
         else {
-            $.ajax(server + 'users/', {
+            $.ajax(server + 'users/blackList/', { // change here?
             method: 'GET',
             headers: headers
             }).done(function (data) {
@@ -188,7 +189,8 @@
         }
     });
 
-    /*用户-停用*/
+    /*
+    // 用户-停用
     function member_stop(obj, id) {
         layer.confirm('确认要停用吗？', function (index) {
 
@@ -211,6 +213,7 @@
 
         });
     }
+    */
 
     function search() {
         var url = self.location.href;
@@ -239,37 +242,18 @@
         return decodeURI(pair[1]);
     }
 
-    /*用户-删除*/
-    function member_del(obj, id) {
-        //TODO:用户不存在时如何提示？
-        layer.confirm('确认要删除吗？', function (index) {
-            //发异步删除数据
-            $.ajax(server + `users/${id}/`, {
-                method: 'DELETE',
-                headers: headers
-            }).done(function (data) {
-                $(obj).parents("tr").remove();
-                layer.msg('已删除!', { icon: 1, time: 1000 });
-            }).fail(function (xhr, status) {
-                console.log(xhr);
-                console.log(status);
-                if (xhr.status === 404) {
-                    layer.msg('该用户不存在', { icon: 5 });
-                }
-                else {
-                    layer.msg("网络错误", { icon: 2 });
-                }
-            }).always(function () {
-                //layer.close(index);
-            });
-        });
-    }
+    // 将选中的黑名单用户移出黑名单
+    function removeFromBlacklist(argument) {
+        var ids = [];
+        var elems = [];
 
-    /*用户-编辑*/
-    function member_edit(obj, id) {
-        //TODO:用户不存在时如何提示？
-        localStorage.member_id_edit = id;
-        xadmin.open('编辑', 'member-edit.html', 600, 400);
+        // 获取选中的id 
+        $('tbody input').each(function (index, el) {
+            if ($(this).prop('checked')) {
+                ids.push($(this).val());
+                elems.push($(this));
+            }
+        });
     }
 
 
@@ -315,6 +299,34 @@
         });
     }
 
+    /*用户-删除*/
+    function blacklist_out(obj, id) {
+        //TODO:用户不存在时如何提示？
+        layer.confirm('确认要移出吗？', function (index) {
+            //发异步删除数据
+            $.ajax(server + `users/blackList/${id}/`, {
+                method: 'PUT',
+                headers: headers
+            }).done(function (data) {
+                console.log("before:" + data.defaults_number);
+                data.defaults_number = 2;
+                console.log("after:" + data.defaults_number);
+                layer.msg('已移出!', { icon: 1, time: 1000 });
+            }).fail(function (xhr, status) {
+                console.log(xhr);
+                console.log(status);
+                if (xhr.status === 404) {
+                    layer.msg('该用户不存在', { icon: 5 });
+                }
+                else {
+                    layer.msg("网络错误", { icon: 2 });
+                }
+            }).always(function () {
+                layer.close(index);
+            });
+        });
+    }
+
     function member_add(data) {
         cnt++;
         var td = document.createElement('tr');
@@ -329,21 +341,24 @@
                 data[key] = '';
             }
         }
+
+        var inBlacklist = data['defaults_number'] ? true : false;
+
         $(td).html(`
-            <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
+        <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
             <td>${data.id}</td>
+            <td>${data.student_id}</td>
             <td>${data.name}</td>
             <td><img src="${data.avatar}"></td>
             <td>${data.email}</td>
             <td>${data.sign}</td>
+            <td>${data.defaults_number}</td>
+            <td>${inBlacklist}</td>
+            <td>${data.is_csstd}</td>
             <td class="td-manage">
-                <a title="编辑" onclick="member_edit(this,${data.id})"
+                <a title="移出" onclick="blacklist_out(this,${data.id})"
                 href="javascript:;">
-                    <i class="layui-icon">&#xe642;</i>
-                </a>
-                <a title="删除" onclick="member_del(this,${data.id})" href="javascript:;">
-                    <i class="layui-icon">&#xe640;</i>
-                </a>
+                    <i class="layui-btn layui-btn-small">移出</i>
             </td>`);
     }
 </script>
