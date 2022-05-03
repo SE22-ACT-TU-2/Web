@@ -46,9 +46,7 @@
                     </div>
                     <div class="layui-card-header">
                         <!-- 添加场地预约先不做-->    
-                        <button class="layui-btn layui-btn-normal" onclick="xadmin.open('修改','./court-booking-edit.html',600,400)"><i
-                            class="layui-icon"></i>修改预约时间
-                        </button>
+                        <!--没有批量修改预约时间的按钮，若要修改单个订单的预约时间，在“编辑”那栏修改-->
                         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除
                         </button>
                     </div>
@@ -157,13 +155,15 @@
             type: 3,
             icon: 1
         });
+
+        //根据学工号搜索预约订单
         var search_id = getQueryVariable();
         console.log(search_id);
         if (search_id) {
             $.ajax(server + 'web/ground_apply/search/', {
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({search_id: search_id}),
+            data: JSON.stringify({student_id: search_id}),
             headers: headers
             }).done(function (data) {
                 console.log(data);

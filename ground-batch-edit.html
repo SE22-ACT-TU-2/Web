@@ -25,11 +25,11 @@
         <div class="layui-row">
             <form class="layui-form">
                 <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
+                    <label for="L_ground_type" class="layui-form-label">
                         <span class="x-red">*</span>选择要价格调整的场地</label>
                     <!--无需勾选-->
                     <div class="layui-input-inline">
-                        <select name="review" lay-verify="required">
+                        <select name="area" lay-verify="required">
                             <option value=""></option>
                             <option value="羽毛球馆">羽毛球馆</option>
                             <!--怎么做到不默认选择，但也不把""放到选项里面呢-->
@@ -37,21 +37,13 @@
                         </select>
                     </div>
                 </div>
+                
                 <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
-                        原价格</label>
-                    <!--自动弹出价格，无需输入-->
-                    <div class="layui-input-inline">
-                        <input type="text" name="description" lay-verify="limit500" autocomplete="off"
-                            class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label for="L_email" class="layui-form-label">
+                    <label for="L_new_price" class="layui-form-label">
                         <span class="x-red">*</span>新价格</label>
                     <!--输入限制为数字-->
                     <div class="layui-input-inline">
-                        <input type="text" name="description" lay-verify="limit500" autocomplete="off"
+                        <input type="text" name="price" lay-verify="required|positive_number" autocomplete="off"
                             class="layui-input">
                     </div>
                 </div>
@@ -72,37 +64,16 @@
                     layer = layui.layer;
 
 
-                var index = layer.open({ type: 3, icon: 1 });
-                $.ajax(server + `users/${id}/`, {
-                    method: 'GET',
-                    headers: headers
-                }).done(function (data) {
-                    $('#L_id').val(data.id);
-                    $('#L_name').val(data.name);
-                    $('#L_avatar').val(data.avatar);
-                    $('#L_email').val(data.email);
-                    $('#L_sign').val(data.sign);
-                }).fail(function (xhr, status) {
-                    console.log(xhr);
-                    console.log(status);
-                    if (xhr.status === 404) {
-                        layer.msg('该用户不存在', { icon: 5 });
-                    } else {
-                        layer.msg("网络错误", { icon: 2 });
-                    }
-                }).always(function () {
-                    layer.close(index);
-                });
+                //无需信息回显
 
+                //自定义验证规则
+                var date = new Date();
                 form.verify({
-                    nickname: function (value, item) {
-                        if (value.length > 10) {
-                            return '昵称长度不能超过10个字符';
-                        }
-                    },
-                    sign: function (value, item) {
-                        if (value.length > 100) {
-                            return '签名长度不能超过100个字符';
+                    positive_number: function (value, item) {
+                        console.log(value);
+                        console.log(parseFloat(value));
+                        if (parseFloat(value) == NaN || parseFloat(value) < 0) {
+                            return '价格必须为大于等于0的数字';
                         }
                     }
                 });
@@ -112,17 +83,21 @@
                     function (data) {
                         console.log(data.field);
                         var index = layer.open({ type: 3, icon: 1 });
-                        $.ajax(server + `users/${id}/`, {
-                            method: 'PUT',
+                        $.ajax(server + `web/ground/mul/`, {
+                            method: 'POST',
                             contentType: 'application/json',
                             data: JSON.stringify(data.field),
                             headers: headers
                         }).done(function (data) {
                             layer.msg('修改成功', { icon: 1, time: 1000 }, function () {
                                 // kjs_TODO: not work
-                                window.parent.location.reload();
-                                var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
-                                parent.layer.close(index);
+                                try {
+                                    window.parent.location.reload();
+                                    var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
+                                    parent.layer.close(index);
+                                } catch (DOMException) {
+                                    ;
+                                }
                             });
                         }).fail(function (xhr, status) {
                             console.log(xhr);

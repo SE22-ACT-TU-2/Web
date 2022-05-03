@@ -152,7 +152,7 @@
         var search_student_id = getQueryVariable();
         console.log(search_student_id);
         if (search_student_id) {
-            $.ajax(server + 'web/ground_apply/search/', {
+            $.ajax(server + 'web/ground_verify/search/', {
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({"student_id": search_student_id}),
