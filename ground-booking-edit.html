@@ -58,10 +58,10 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="L_old_date" class="layui-form-label">
+                <label for="L_apply_time" class="layui-form-label">
                     <span class="x-red">*</span>原预约日期</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="L_old_begin_time" name="old_begin_time" autocomplete="off" class="layui-input" disabled="disabled"
+                    <input type="text" id="L_apply_time" name="apply_time" autocomplete="off" class="layui-input" disabled="disabled"
                             style="background:#d6d6d6">
                 </div>
                 <div class="layui-form-mid layui-word-aux">
@@ -83,7 +83,7 @@
                 <label for="L_old_end_time" class="layui-form-label">
                     原结束时间</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="L_old_begin_time" name="old_end_time" autocomplete="off" class="layui-input" disabled="disabled"
+                    <input type="text" id="L_old_end_time" name="old_end_time" autocomplete="off" class="layui-input" disabled="disabled"
                            style="background:#d6d6d6">
                 </div>
                 <div class="layui-form-mid layui-word-aux">
@@ -144,11 +144,14 @@
                     method: 'GET',
                     headers: headers
                 }).done(function (data) {
-                    $('#L_student_id').val(data.student_id);
-                    $('#L_name').val(data.name);
-                    $('#L_ground_id').val(data.avatar);
-                    $('#L_email').val(data.email);
-                    $('#L_sign').val(data.sign);
+                    console.log(data);
+                    $('#L_student_id').val(data[0].student_id);
+                    $('#L_name').val(data[0].student_name);
+                    $('#L_ground_name').val(data[0].ground_name);
+                    $('#L_apply_time').val(data[0].apply_time.substring(0,10));
+                    $('#L_old_begin_time').val(data[0].begin_time.replace('T', ' '));
+                    $('#L_old_end_time').val(data[0].end_time.replace('T', ' '));
+                    
                 }).fail(function (xhr, status) {
                     console.log(xhr);
                     console.log(status);
@@ -178,9 +181,19 @@
             //监听提交
             form.on('submit(add)',
                 function (data) {
+                    var new_begin_hour = data.field.new_begin_time.substring(0,2);
+                    var new_begin_min = data.field.new_begin_time.substring(3,5);
+                    var new_begin_time = data.field.new_date + ' ' + new_begin_hour + ':' + new_begin_min + ':00';
+                    data.field['begin_time'] = new_begin_time;
+
+                    var new_end_hour = data.field.new_end_time.substring(0,2);
+                    var new_end_min = data.field.new_end_time.substring(3,5);
+                    var new_end_time = data.field.new_date + ' ' + new_end_hour + ':' + new_end_min + ':00';
+                    data.field['end_time'] = new_end_time;
+                    console.log(new_end_hour, new_end_min, new_end_time);
                     console.log(data.field);
                     var index = layer.open({type: 3, icon: 1});
-                    $.ajax(server + `users/${id}/`, {
+                    $.ajax(server + `web/ground_apply/${id}/`, {
                         method: 'PUT',
                         contentType: 'application/json',
                         data: JSON.stringify(data.field),
@@ -188,9 +201,14 @@
                     }).done(function (data) {
                         layer.msg('修改成功', {icon: 1, time: 1000}, function () {
                             // kjs_TODO: not work
-                            window.parent.location.reload();
-                            var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
-                            parent.layer.close(index);
+                            console.log(data.detail);
+                            try {
+                                window.parent.location.reload();//似乎在
+                                var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
+                                parent.layer.close(index);
+                            } catch (DOMException) {
+                                ;
+                            }
                         });
                     }).fail(function (xhr, status) {
                         console.log(xhr);

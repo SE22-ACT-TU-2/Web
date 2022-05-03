@@ -50,6 +50,9 @@
                     <input type="text" id="L_avatar" disabled="disabled" autocomplete="off" class="layui-input"
                            style="background:#d6d6d6">
                 </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>不可更改
+                </div>
             </div>
             <div class="layui-form-item">
                 <label for="L_email" class="layui-form-label">
@@ -57,6 +60,9 @@
                 <div class="layui-input-inline">
                     <input type="text" id="L_email" disabled="disabled" autocomplete="off" class="layui-input"
                            style="background:#d6d6d6">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>不可更改
                 </div>
             </div>
             <div class="layui-form-item">
@@ -73,6 +79,9 @@
                 <div class="layui-input-inline">
                     <input type="text" id="L_money" disabled="disabled" autocomplete="off" class="layui-input"
                            style="background:#d6d6d6">
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <span class="x-red">*</span>不可更改
                 </div>
             </div>
             <div class="layui-form-item">
@@ -94,9 +103,9 @@
               -->
             <div class="layui-form-item">
                 <label for="L_is_csstd" class="layui-form-label">是否为院内学生</label>
-                <div class="layui-input-block" disabled="disabled" style="background:#d6d6d6">
-                <input type="radio" name="is_csstd" value=true title="是">
-                <input type="radio" name="is_csstd" value=false title="否">
+                <div class="layui-input-block" disabled="disabled">
+                    <input type="radio" name="is_csstd" value=true title="是">
+                    <input type="radio" name="is_csstd" value=false title="否">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -110,6 +119,8 @@
     headers = {'token': localStorage.token};
     layui.use(['form', 'layer'],
         function () {
+            
+            
             var id = localStorage.member_id_edit;
             localStorage.removeItem('member_id_edit');
             console.log(id);
@@ -123,13 +134,14 @@
             } else {
                 var index = layer.open({type: 3, icon: 1});
 
-                // 回显is_csstd框
+                // 灰禁is_csstd框，要经审核才可修改
                 var type = $('#L_is_csstd');
                 $.ajax(server + `users/${id}/`, {
                     method: 'GET',
                     headers: headers
                 }).done(function (data) {
                     console.log(data);
+                    /*
                     var is_csstd = $('#L_is_csstd').val();
                     console.log("$('#L_is_csstd') = " + is_csstd);
                     var whetherCooperation = (is_csstd == true)? true : false;
@@ -142,7 +154,10 @@
                             $(radio[i]).click();
                             console.log(whetherCooperation);
                         }
-                    }                    
+                    }
+                    */
+                    $("input[name='is_csstd']").attr("disabled","disabled");// 灰禁is_csstd单选框
+                    $("input[name='is_csstd']").next().addClass('layui-radio-disbaled layui-disabled');                    
                 }).fail(function (xhr, status) {
                     console.log(xhr);
                     console.log(status);
@@ -212,17 +227,23 @@
                         data: JSON.stringify(data.field),
                         headers: headers
                     }).done(function (data) {
+
+                        
                         layer.msg('修改成功', {icon: 1, time: 1000}, function () {
                             // kjs_TODO: not work
                             console.log(data);
                             console.log('修改成功');
+                            //window.parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
+                            parent.layer.close(index);
+                            /*
                             try {
-                                window.parent.location.reload();//似乎在
+                                //window.parent.location.reload();//似乎在本地运行，会跨域报错
                                 var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
                                 parent.layer.close(index);
                             } catch (DOMException) {
                                 ;
-                            }
+                            }*/
                             
                         });
                     }).fail(function (xhr, status) {

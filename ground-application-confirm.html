@@ -148,14 +148,14 @@
             type: 3,
             icon: 1
         });
-        // groundVerify search先不做，确定了
+        // 场地申请查询
         var search_student_id = getQueryVariable();
         console.log(search_student_id);
         if (search_student_id) {
-            $.ajax(server + 'userVerify/search/', {
+            $.ajax(server + 'web/ground_apply/search/', {
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({"search_number": search_student_id}),
+            data: JSON.stringify({"student_id": search_student_id}),
             headers: headers
             }).done(function (data) {
                 for (var i = 0; i < data.length; i++) {
@@ -303,33 +303,16 @@ function ground_application_update(td, data) {
         }
     }
 
-    /*
-    <thead>
-        <tr>
-            <th>
-                <input type="checkbox" lay-filter="checkall" name="" lay-skin="primary">
-            </th>
-            <th>ID</th>
-            <th>申请人学工号</th> <!--student_id-->
-            <th>申请人姓名</th><!--name-->
-            <th>申请提交时间</th><!--apply_time-->
-            <th>场地名</th><!--ground_id_id?-->
-            <th>预约开始时间</th><!--begin_time-->
-            <th>预约结束时间</th><!--end_time-->
-            <th>审核材料</th><!--file--> 图片形式
-            <th>操作</th><!--a button-->
-            <!--<th>审批状态</th>-->
-        </tr>
-    </thead>
-    */
-
+    data.apply_time = data.apply_time.replace('T',' ');
+    data.end_time = data.end_time.replace('T',' ');
+    data.begin_time = data.begin_time.replace('T',' ');
     $(td).html(`
     <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
         <td>${data.id}</td>
-        <td>${data.user_id.student_id}</td> 
-        <td>${data.user_id.real_name}</td>
+        <td>${data.student_id}</td> 
+        <td>${data.student_name}</td>
         <td>${data.apply_time}</td>
-        <td>${data.ground_id.name}</td>
+        <td>${data.ground_name}</td>
         <td>${data.begin_time}</td>
         <td>${data.end_time}</td>
         <td><img src="images/${data.file}"></td>

@@ -342,7 +342,8 @@
             }
         }
 
-        var inBlacklist = data['defaults_number'] ? true : false;
+        var inBlacklist = data['defaults_number'] ? '是' : '否';
+        var isCsstd = data['is_csstd'] ? '是' : '否';
 
         $(td).html(`
         <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>

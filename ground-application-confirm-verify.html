@@ -77,8 +77,8 @@
             <div class="layui-form-item">
                 <label for="L_verify_choices" class="layui-form-label"> 
                     审核结果 <span class="x-red">*</span></label>
-                <input type="radio" name="pass" value="true" title="通过/全部通过" checked>
-                <input type="radio" name="pass" value="false" title="不通过/全部不通过">
+                <input type="radio" name="pass" value=true title="通过/全部通过" checked>
+                <input type="radio" name="pass" value=false title="不通过/全部不通过">
             </div>
             <div class="layui-form-item">
                 <label for="L_feedback" class="layui-form-label">审核反馈</label>
@@ -117,12 +117,12 @@
                 }).done(function (data) {
                     console.log("ground-application-confirm-verify信息回显\n");
                     console.log(data);
-                    console.log(data[0].user_id.student_id);
-                    $('#L_student_id').val(data[0].user_id.student_id);
-                    $('#L_name').val(data[0].user_id.name);
-                    $('#L_area').val(data[0].ground_id.name);
-                    $('#L_begin_time').val(data[0].begin_time);
-                    $('#L_end_time').val(data[0].end_time);
+                    console.log(data[0].student_id);
+                    $('#L_student_id').val(data[0].student_id);
+                    $('#L_name').val(data[0].student_name);
+                    $('#L_area').val(data[0].ground_name);
+                    $('#L_begin_time').val(data[0].begin_time.replace('T',' '));
+                    $('#L_end_time').val(data[0].end_time.replace('T',' '));
                     var image_src = "images/"+data[0].avatar;
                     document.getElementById("L_file").src = image_src;
                     //$('#L_student_card_image').append("<img src=" + image_src +" height = 100, weight = 100/>");
@@ -144,7 +144,9 @@
             //监听提交
             form.on('submit(add)',
                 function (data) {
-                    console.log(data.field);
+                    var isPass = $('input[name="pass"]:checked').val() == 'true' ? true :false;                    console.log("pass? " + isPass);
+                    data.field.pass = isPass;
+                    console.log(data);
                     var index = layer.open({type: 3, icon: 1});
                     var index = layer.open({type: 3, icon: 1});
                 $.ajax(server + `web/ground_verify/${id}/`, {
@@ -154,9 +156,8 @@
                     headers: headers
                 }).done(function (data) {
                     console.log(data);
-                    for (var i = 0; i < data.length; i++) {
-                        member_add(data[i]);
-                    }
+                    //data.field.is_batch
+                    layer.msg('审核完成', {icon: 5});
 
                 }).fail(function (xhr, status) {
                     console.log(data);

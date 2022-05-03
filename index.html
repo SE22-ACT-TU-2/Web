@@ -26,6 +26,13 @@
         var is_remember = false;
         var token = localStorage.token;
         var username = null;
+        var admintype = localStorage.admintype;
+        console.log(admintype);
+        if (admintype == 'super') {
+            console.log('这是超级管理员');
+        } else {
+            console.log('小管理');
+        }
         
         layui.use('layer', function () {
             var index = layer.open({

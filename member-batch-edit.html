@@ -7,7 +7,7 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
-          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+        content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
     <link rel="stylesheet" href="./css/font.css">
     <link rel="stylesheet" href="./css/xadmin.css">
     <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
@@ -21,129 +21,128 @@
 </head>
 
 <body>
-<div class="layui-fluid">
-    <div class="layui-row">
-        <form class="layui-form">
-            <div class="layui-form-item">
-                <label for="L_email" class="layui-form-label">
-                    <span class="x-red">*</span>选择要批量修改的内容</label> <!--批量修改后，勾选保留-->
-                <div class="layui-input-inline">
-                    <select name="review" lay-verify="required">
-                        <!--<option value=""></option> -->
-                        <option value="true">黑名单状态</option> <!--怎么做到不默认选择，但也不把""放到选项里面呢-->
-                        <option value="false">违约次数</option>
-                    </select>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form">
+                <div class="layui-form-item">
+                    <label for="L_edit_choice" class="layui-form-label">
+                        <span class="x-red">*</span>选择要批量修改的内容</label>
+                    <!--批量修改后，勾选保留-->
+                    <div class="layui-input-inline">
+                        <select name="edit_choice" lay-verify="required">
+                            <!--<option value=""></option> -->
+                            <option value="true">黑名单状态</option>
+                            <!--怎么做到不默认选择，但也不把""放到选项里面呢-->
+                            <option value="false">违约次数</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label for="L_email" class="layui-form-label">
-                    黑名单状态</label>
-                <div class="layui-input-inline">
-                    <select name="review" lay-verify="required">
-                        <option value="false">移出</option>
-                        <option value="true">移入</option>
-                    </select>
+                <div class="layui-form-item">
+                    <label for="L_blacklist" class="layui-form-label">
+                        黑名单状态</label>
+                    <div class="layui-input-inline">
+                        <select name="blacklist">
+                            <option value="true">移入</option>
+                            <option value="false">移出</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label for="L_email" class="layui-form-label">
-                    违约次数</label>
-                <div class="layui-input-inline">
-                    <input type="text" name="description" lay-verify="limit500" autocomplete="off"
-                        class="layui-input">
+                <div class="layui-form-item">
+                    <label for="L_defaults_number" class="layui-form-label">
+                        违约次数</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="defaults_number" lay-verify="limit500" autocomplete="off"
+                            class="layui-input">
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label for="L_repass" class="layui-form-label"></label>
-                <button class="layui-btn" lay-filter="add" lay-submit="">提交</button>
-            </div>
-        </form>
+                <div class="layui-form-item">
+                    <label for="L_repass" class="layui-form-label"></label>
+                    <button class="layui-btn" lay-filter="add" lay-submit="">提交</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-<script>
-    headers = {'token': localStorage.token};
-    layui.use(['form', 'layer'],
-        function () {
-            var id = localStorage.member_id_edit;
-            localStorage.removeItem('member_id_edit');
-            console.log(id);
-            $ = layui.jquery;
-            var form = layui.form,
-                layer = layui.layer;
+    <script>
+        headers = { 'token': localStorage.token };
+        layui.use(['form', 'layer'],
+            function () {
+                var ids = localStorage.member_ids.split(",");
+                var elems = localStorage.member_elems;
+                localStorage.removeItem('member_ids');
+                localStorage.removeItem('member_elems');
 
-            if (id == null) {
-                layer.msg('ID错误', {icon: 5});
-            } else {
-                var index = layer.open({type: 3, icon: 1});
-                $.ajax(server + `users/${id}/`, {
-                    method: 'GET',
-                    headers: headers
-                }).done(function (data) {
-                    $('#L_id').val(data.id);
-                    $('#L_name').val(data.name);
-                    $('#L_avatar').val(data.avatar);
-                    $('#L_email').val(data.email);
-                    $('#L_sign').val(data.sign);
-                }).fail(function (xhr, status) {
-                    console.log(xhr);
-                    console.log(status);
-                    if (xhr.status === 404) {
-                        layer.msg('该用户不存在', {icon: 5});
-                    } else {
-                        layer.msg("网络错误", {icon: 2});
-                    }
-                }).always(function () {
-                    layer.close(index);
-                });
-            }
+                $ = layui.jquery;
+                var form = layui.form,
+                    layer = layui.layer;
+                //监听提交
+                form.on('submit(add)',
+                    function (data) {
+                        var edit_choice = data.field.edit_choice == "true" ? true : false;
+                        var inBlacklist = data.field.blacklist == "true" ?　true : false;
+                        var defaults_number_input = data.field.defaults_number;
+                        console.log("批量修改" + edit_choice);
+                        console.log("是否在黑名单" + inBlacklist);
+                        console.log("违约次数修改为" + defaults_number_input);
+                        for (var i = 0; i < ids.length; i++) {
+                            var id = ids[i];
+                            var index = layer.open({ type: 3, icon: 1 });
+                            console.log("id:" + id);
+                            
+                            if (edit_choice) { // change state blacklist
+                                data.field.content = "state";
+                                if (inBlacklist) {
+                                    data.field.is_black = "in";
+                                    data.field.defaults_number = 3; // put in blacklist
+                                } else {
+                                    data.field.is_black = "out";
+                                    data.field.defaults_number = 2; // remove from blacklist, if not in bl?
+                                }
+                            } else { // change the defaults_number
+                                data.field.content = "number";
+                                data.field.is_black = null;
+                                data.field.defaults_number = defaults_number_input;
+                            }
+                            console.log(data.field);
 
-            form.verify({
-                nickname: function (value, item) {
-                    if (value.length > 10) {
-                        return '昵称长度不能超过10个字符';
-                    }
-                },
-                sign: function (value, item) {
-                    if (value.length > 100) {
-                        return '签名长度不能超过100个字符';
-                    }
-                }
-            });
 
-            //监听提交
-            form.on('submit(add)',
-                function (data) {
-                    console.log(data.field);
-                    var index = layer.open({type: 3, icon: 1});
-                    $.ajax(server + `users/${id}/`, {
-                        method: 'PUT',
-                        contentType: 'application/json',
-                        data: JSON.stringify(data.field),
-                        headers: headers
-                    }).done(function (data) {
-                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
-                            // kjs_TODO: not work
-                            window.parent.location.reload();
-                            var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
-                            parent.layer.close(index);
-                        });
-                    }).fail(function (xhr, status) {
-                        console.log(xhr);
-                        console.log(status);
-                        if (xhr.status === 400) {
-                            layer.msg('昵称不能为空', {icon: 5});
-                        } else if (xhr.status === 404) {
-                            layer.msg('该用户不存在', {icon: 5});
-                        } else {
-                            layer.msg('网络错误', {icon: 2});
+                            $.ajax(server + `users/mul/${id}/`, {
+                                method: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify(data.field),
+                                headers: headers
+                            }).done(function (data) {
+
+                                layer.msg('修改成功', { icon: 1, time: 1000 }, function () {
+                                    // kjs_TODO: not work
+                                    console.log(data);
+                                    console.log('修改成功');
+                                    try {
+                                        window.parent.location.reload();//似乎在
+                                        var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
+                                        parent.layer.close(index);
+                                    } catch (DOMException) {
+                                        ;
+                                    }
+
+                                });
+                            }).fail(function (xhr, status) {
+                                console.log(xhr);
+                                console.log(status);
+                                if (xhr.status === 400) {
+                                    layer.msg('昵称不能为空', { icon: 5 });
+                                } else if (xhr.status === 404) {
+                                    layer.msg('该用户不存在', { icon: 5 });
+                                } else {
+                                    layer.msg('网络错误', { icon: 2 });
+                                }
+                            }).always(function () {
+                                layer.close(index);
+                            });
                         }
-                    }).always(function () {
-                        layer.close(index);
+                        return false;
                     });
-                    return false;
-                });
 
-        });</script>
+            });</script>
 
 </body>
 

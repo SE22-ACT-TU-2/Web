@@ -27,12 +27,6 @@
                 <div class="layui-card">
                     <div class="layui-card-body ">
                         <form class="layui-form layui-col-space5">
-                            <!-- <div class="layui-inline layui-show-xs-block">
-                                <input class="layui-input" autocomplete="off" placeholder="开始日" name="start" id="start">
-                            </div>
-                            <div class="layui-inline layui-show-xs-block">
-                                <input class="layui-input" autocomplete="off" placeholder="截止日" name="end" id="end">
-                            </div> -->
                             <div class="layui-inline layui-show-xs-block">
                                 <input type="text" name="keyword" id="keyword" placeholder="请输入预约人学工号" id="searchBtn" autocomplete="off"
                                     class="layui-input">
@@ -51,11 +45,7 @@
                         </form>
                     </div>
                     <div class="layui-card-header">
-                        <!-- 添加场地预约先不做
-                        <button class="layui-btn" onclick="xadmin.open('添加预约','./court-application-add.html',600,400)"><i
-                        class="layui-icon"></i>添加
-                        </button>
-                        -->
+                        <!-- 添加场地预约先不做-->    
                         <button class="layui-btn layui-btn-normal" onclick="xadmin.open('修改','./court-booking-edit.html',600,400)"><i
                             class="layui-icon"></i>修改预约时间
                         </button>
@@ -63,7 +53,6 @@
                         </button>
                     </div>
                     <div class="layui-card-body layui-table-body layui-table-main">
-
                         <table class="layui-table layui-form">
                             <thead>
                                 <tr>
@@ -71,17 +60,16 @@
                                         <input type="checkbox" lay-filter="checkall" name="" lay-skin="primary">
                                     </th>
                                     <th>ID</th>
-                                    <th>预约人学工号</th> <!--student_id-->
-                                    <th>预约人姓名</th><!--name-->
-                                    <th>预约提交时间</th><!--apply_time-->
-                                    <th>场地名</th><!--ground_id_id?-->
-                                    <th>预约开始时间</th><!--begin_time-->
-                                    <th>预约结束时间</th><!--end_time-->
-                                    <th>订单状态</th><!--state-->
-                                    <th>是否可以改期</th>><!--can_change-->
-                                    <th>反馈</th><!--feedback-->
-                                    <th>是否为批量预约</th><!--is_batch-->
-                                    <th>操作</th><!--改期 or delete-->
+                                    <th>预约人学工号</th>
+                                    <th>预约人姓名</th>
+                                    <th>预约提交时间</th>
+                                    <th>场地名</th>
+                                    <th>预约开始时间</th>
+                                    <th>预约结束时间</th>
+                                    <th>订单状态</th>
+                                    <th>是否可以改期</th>
+                                    <th>反馈</th>
+                                    <th>操作</th>
                                 </tr>
                             </thead>
                             
@@ -107,6 +95,7 @@
         </div>
     </div>
 </body>
+
 <script>
     headers = { 'token': localStorage.token };
     var cnt, tbody;
@@ -168,13 +157,13 @@
             type: 3,
             icon: 1
         });
-        var search_name = getQueryVariable();
-        console.log(search_name);
-        if (search_name) {
+        var search_id = getQueryVariable();
+        console.log(search_id);
+        if (search_id) {
             $.ajax(server + 'web/ground_apply/search/', {
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({name: search_name}),
+            data: JSON.stringify({search_id: search_id}),
             headers: headers
             }).done(function (data) {
                 console.log(data);
@@ -388,42 +377,22 @@
         } else {
             stateStr = '已失效';
         }
-
-        /*
-        <tr>
-            <th>
-                <input type="checkbox" lay-filter="checkall" name="" lay-skin="primary">
-            </th>
-            <th>ID</th>
-            <th>预约人学工号</th> <!--student_id-->
-            <th>预约人姓名</th><!--name-->
-            <th>预约提交时间</th><!--apply_time-->
-            <th>场地名</th><!--ground_id_id?-->
-            <th>预约开始时间</th><!--begin_time-->
-            <th>预约结束时间</th><!--end_time-->
-            <th>订单状态</th><!--state-->
-            <th>是否可以改期</th>><!--can_change-->
-            <th>反馈</th><!--feedback-->
-            <th>是否为批量预约</th><!--is_batch-->
-            <th>操作</th><!--改期 or delete-->
-            
-        </tr>
-        */
-
-        if (data.can_change && data.state == 0) {
+        data.apply_time = data.apply_time.replace('T','__');
+        data.end_time = data.end_time.replace('T','__');
+        data.begin_time = data.begin_time.replace('T','__');
+        if (data.can_change && (data.state == 0 || data.state == 1)) {
             $(td).html(`
             <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
             <td>${data.id}</td>
-            <td>${data.user_id.student_id}</td> 
-            <td>${data.user_id.real_name}</td>
+            <td>${data.student_id}</td> 
+            <td>${data.student_name}</td>
             <td>${data.apply_time}</td>
-            <td>${data.ground_id.name}</td>
+            <td>${data.ground_name}</td>
             <td>${data.begin_time}</td>
             <td>${data.end_time}</td>
             <td>${stateStr}</td>
             <td>${data.can_change}</td>
             <td>${data.feedback}</td>
-            <td>${data.is_batch}</td>
             <td class="td-manage">
                 <a title="改期" onclick="ground_booking_edit(this,${data.id})"
                 href="javascript:;">
@@ -437,16 +406,15 @@
             $(td).html(`
             <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
             <td>${data.id}</td>
-            <td>${data.user_id.student_id}</td> 
-            <td>${data.user_id.real_name}</td>
+            <td>${data.student_id}</td> 
+            <td>${data.student_name}</td>
             <td>${data.apply_time}</td>
-            <td>${data.ground_id.name}</td>
+            <td>${data.ground_name}</td>
             <td>${data.begin_time}</td>
             <td>${data.end_time}</td>
             <td>${stateStr}</td>
             <td>${data.can_change}</td>
             <td>${data.feedback}</td>
-            <td>${data.is_batch}</td>
             <td class="td-manage">
                 <a title="删除" onclick="ground_booking_del(this,${data.id})" href="javascript:;">
                     <i class="layui-icon">&#xe640;</i>

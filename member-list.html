@@ -47,7 +47,7 @@
                     <div class="layui-card-header">
                         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除
                         </button>
-                        <button class="layui-btn layui-btn-normal" onclick="xadmin.open('批量修改','./member-batch-edit.html',600,400)"><i
+                        <button class="layui-btn layui-btn-normal" onclick="member_batch_edit()"><i
                             class="layui-icon"></i>批量修改
                         </button>
                     </div>
@@ -97,6 +97,13 @@
 <script>
     headers = { 'token': localStorage.token };
     var cnt, tbody;
+    var admintype = localStorage.admintype;
+    console.log(admintype);
+    if (admintype == 'super') {
+        console.log('这是超级管理员');
+    } else {
+        console.log('小管理');
+    }
     // 使用表单
     layui.use(['laydate', 'form'], function () {
         var laydate = layui.laydate;
@@ -279,6 +286,23 @@
         xadmin.open('编辑', 'member-edit.html', 600, 400);
     }
 
+    // 批量修改
+    function member_batch_edit(obj, id) {
+        var ids = [];
+        var elems = [];
+
+        // 获取选中的id 
+        $('tbody input').each(function (index, el) {
+            if ($(this).prop('checked')) {
+                ids.push($(this).val());
+                elems.push($(this));
+            }
+        });
+        localStorage.member_ids = ids;
+        localStorage.member_elems = elems;
+        xadmin.open('批量编辑', 'member-batch-edit.html', 600, 400);
+    }
+
     function delAll(argument) {
         var ids = [];
         var elems = [];
@@ -336,7 +360,8 @@
             }
         }
 
-        var inBlacklist = data['defaults_number'] ? true : false;
+        var inBlacklist = data['defaults_number'] >= 3 ? '是' : '否';
+        var isCsstd = data['is_csstd'] ? '是' : '否';
         
         $(td).html(`
             <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
@@ -350,7 +375,7 @@
             <td>${data.money}</td>
             <td>${data.defaults_number}</td>
             <td>${inBlacklist}</td>
-            <td>${data.is_csstd}</td>
+            <td>${isCsstd}</td>
         
             <td class="td-manage">
                 <a title="编辑" onclick="member_edit(this,${data.id})"
