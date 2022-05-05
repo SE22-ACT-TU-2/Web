@@ -48,7 +48,7 @@
                         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除
                         </button>
                         <button class="layui-btn layui-btn-normal" onclick="member_batch_edit()"><i
-                            class="layui-icon"></i>批量修改
+                            class="layui-icon">&#xe642;</i>批量修改
                         </button>
                     </div>
                     <div class="layui-card-body layui-table-body layui-table-main">
@@ -362,12 +362,14 @@
 
         var inBlacklist = data['defaults_number'] >= 3 ? '是' : '否';
         var isCsstd = data['is_csstd'] ? '是' : '否';
+        var real_name = (data.real_name == "") ? "缺失姓名" : data.real_name;
+        var student_id = (data.student_id == "") ? "缺失学工号" : data.student_id;
         
         $(td).html(`
             <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
             <td>${data.id}</td>
-            <td>${data.student_id}</td>
-            <td>${data.real_name}</td>
+            <td>${student_id}</td>
+            <td>${real_name}</td>
             <td>${data.name}</td>
             <td><img src="${data.avatar}"></td>
             <td>${data.email}</td>

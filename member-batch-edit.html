@@ -51,7 +51,7 @@
                     <label for="L_defaults_number" class="layui-form-label">
                         违约次数</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="defaults_number" lay-verify="limit500" autocomplete="off"
+                        <input type="text" name="defaults_number" lay-verify="positive_int" autocomplete="off"
                             class="layui-input">
                     </div>
                 </div>
@@ -74,11 +74,20 @@
                 $ = layui.jquery;
                 var form = layui.form,
                     layer = layui.layer;
+
+                form.verify({
+                    positive_int: function (value, item) {
+                        if (!/^\d*$/.test(value) || parseInt(value) < 0) {
+                            return '违约次数必须为大于等于0的整数';
+                        }
+                    }
+                });
+
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
                         var edit_choice = data.field.edit_choice == "true" ? true : false;
-                        var inBlacklist = data.field.blacklist == "true" ?　true : false;
+                        var inBlacklist = data.field.blacklist == "true" ? true : false;
                         var defaults_number_input = data.field.defaults_number;
                         console.log("批量修改" + edit_choice);
                         console.log("是否在黑名单" + inBlacklist);
@@ -87,7 +96,7 @@
                             var id = ids[i];
                             var index = layer.open({ type: 3, icon: 1 });
                             console.log("id:" + id);
-                            
+
                             if (edit_choice) { // change state blacklist
                                 data.field.content = "state";
                                 if (inBlacklist) {

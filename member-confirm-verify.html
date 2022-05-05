@@ -110,6 +110,8 @@
             //监听提交
             form.on('submit(add)',
                 function (data) {
+                    var isPass = $('input[name="is_csstd"]:checked').val() == 'true' ? true :false;                    console.log("pass? " + isPass);
+                    data.field.is_csstd = isPass;
                     console.log(data.field);
                     var index = layer.open({type: 3, icon: 1});
                     var index = layer.open({type: 3, icon: 1});
@@ -119,11 +121,27 @@
                     data: JSON.stringify(data.field),
                     headers: headers
                 }).done(function (data) {
-                    console.log(data);
+                    console.log(data);// bug, 勾选框的信息没有更新给data, fuck
                     for (var i = 0; i < data.length; i++) {
-                        member_add(data[i]);
+                        member_add(data[i]); // update the information?
                     }
-
+                    layer.msg('审核成功', {icon: 1, time: 1000}, function () {
+                            // kjs_TODO: not work
+                            console.log(data);
+                            console.log('审核成功');
+                            //window.parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
+                            parent.layer.close(index);
+                            /*
+                            try {
+                                //window.parent.location.reload();//似乎在本地运行，会跨域报错
+                                var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
+                                parent.layer.close(index);
+                            } catch (DOMException) {
+                                ;
+                            }*/
+                            
+                        });
                 }).fail(function (xhr, status) {
                     console.log(data);
                     console.log(xhr);

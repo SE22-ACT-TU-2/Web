@@ -31,7 +31,8 @@
                         <form class="layui-form layui-col-space5">
                             <div class="layui-inline layui-show-xs-block">
                                 <input type="text" name="username" id="keyword" placeholder="请输入学工号" autocomplete="off"
-                                    class="layui-input"> <!--username这个可能-->
+                                    class="layui-input">
+                                <!--username这个可能-->
                             </div>
                             <div class="layui-inline layui-show-xs-block">
                                 <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="search()"><i
@@ -149,10 +150,10 @@
         console.log(search_student_id);
         if (search_student_id) {
             $.ajax(server + 'userVerify/search/', {
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({"search_number": search_student_id}),
-            headers: headers
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ "search_number": search_student_id }),
+                headers: headers
             }).done(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     member_add(data[i]);
@@ -167,8 +168,8 @@
         }
         else {
             $.ajax(server + 'userVerify/', {
-            method: 'GET',
-            headers: headers
+                method: 'GET',
+                headers: headers
             }).done(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     member_add(data[i]);
@@ -184,125 +185,128 @@
     });
 
 
-function search() {
-    var url = self.location.href;
-    var search_student_id = getQueryVariable();
-    console.log(search_student_id);
-    var value = $("#keyword").val();
-    console.log(value);
-    var end = url.indexOf('=');
-    if (end != -1) {
-        url = url.substring(0, end + 1);
-        url = url.concat(encodeURI(value));
+    function search() {
+        var url = self.location.href;
+        var search_student_id = getQueryVariable();
+        console.log(search_student_id);
+        var value = $("#keyword").val();
+        console.log(value);
+        var end = url.indexOf('=');
+        if (end != -1) {
+            url = url.substring(0, end + 1);
+            url = url.concat(encodeURI(value));
+        }
+        else {
+            url = url.concat("?search_key=");
+            url = url.concat(encodeURI(value));
+        }
+        window.location.href = url;
     }
-    else {
-        url = url.concat("?search_key=");
-        url = url.concat(encodeURI(value));
-    }
-    window.location.href = url;
-}
 
-function getQueryVariable() {
-    var query = window.location.search.substring(1);
-    if (query == "") {
-        console.log("No search")
-        return null;
+    function getQueryVariable() {
+        var query = window.location.search.substring(1);
+        if (query == "") {
+            console.log("No search")
+            return null;
+        }
+        var pair = query.split("=");
+        return decodeURI(pair[1]);
     }
-    var pair = query.split("=");
-    return decodeURI(pair[1]);
-}
 
-/*用户-操作-审核*/
-function member_confirm_verify(obj, id) {
+    /*用户-操作-审核*/
+    function member_confirm_verify(obj, id) {
         //TODO:用户不存在时如何提示？
         localStorage.member_id_edit = id;
         xadmin.open('审核', 'member-confirm-verify.html', 600, 400);
-}
+    }
 
-/*批量审核*/
-function outAll(argument) {
-    var ids = [];
-    var elems = [];
+    /*批量审核*/
+    function outAll(argument) {
+        var ids = [];
+        var elems = [];//无用
 
-    // 获取选中的id 
-    $('tbody input').each(function (index, el) {
+        // 获取选中的id 
+        $('tbody input').each(function (index, el) {
             if ($(this).prop('checked')) {
                 ids.push($(this).val());
                 elems.push($(this));
             }
-    });
+        });
 
-    // todo -- 批量通过/不通过
-    layer.confirm('确认要全部通过吗？' + ids.toString(), function (index) {
+        // todo -- 批量通过/不通过
+        layer.confirm('确认要全部通过吗？' + ids.toString(), function (index) {
             //捉到所有被选中的，发异步进行删除
             //TODO：用户不存在时如何提示？
             var status = true;
             console.log(ids);
-            console.log(elems);
+
             for (var i = 0; i < ids.length; i++) {
-                //var index = layer.open({type: 3, icon: 1});
-                $.ajax(server + `userVerify/show/${ids[i]}/`, {
-                    method: 'GET', // do I need to change 'GET' to 'PUT'?
+                id = ids[i];
+                console.log(id);
+                var datas = [];
+                $.ajax(server + `userVerify/show/${id}/`, {
+                    method: 'GET',
                     headers: headers
                 }).done(function (data) {
-                    data[0].is_csstd = true;
-                    console.log(data);
-                    console.log(ids);
-                    console.log(ids[0]);
-                    $.ajax(server + `userVerify/${ids[$[i]]}/`, { // here is the bugs
-                    method: 'PUT',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data.field),
-                    headers: headers
-                    }).done(function (data) {
-                        data.is_csstd = true;
-                        //$(elems[i]).parents("tr").remove();
-                        //layer.msg('已删除!', { icon: 1, time: 1000 });
-                    }).fail(function (xhr, status) {
-                        console.log(xhr);
-                        console.log(status);
-                        //layer.msg("网络错误");
-                        status = false;
-                    }).always(function () {
-                        //layer.close(index);
-                    });
+                    data[0].is_csstd = 1;//todo
+                    datas.push(data[0]);
                 }).fail(function (xhr, status) {
                     console.log(xhr);
                     console.log(status);
-                    if (xhr.status === 404) {
-                        layer.msg('该用户不存在', {icon: 5});
-                    } else {
-                        layer.msg("网络错误", {icon: 2});
-                    }
+                    layer.msg("网络错误", { icon: 2 });
                 }).always(function () {
-                    ;
+                    layer.close(index);
                 });
-
-
-                
             }
+            console.log(datas);
+
+            for (var i = 0; i < ids.length; i++) {
+                $.ajax(server + `userVerify/${id}/`, {
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(datas[i]),
+                        headers: headers
+                    }).done(function (data) {
+                        console.log(id + "通过");
+                        layer.msg('通过', { icon: 2 });
+                    }).fail(function (xhr, status) {
+                        console.log(data);
+                        console.log(xhr);
+                        console.log(status);
+                        if (xhr.status === 404) {
+                            layer.msg('该审核不存在', { icon: 5 });
+                        } else {
+                            layer.msg("网络错误", { icon: 2 });
+                        }
+                    }).always(function () {
+                        layer.close(index);
+                    });
+            }
+
+            return false;
         });
-}
-
-function member_add(data) {
-    cnt++;
-    var td = document.createElement('tr');
-    member_update(td, data);
-    tbody.appendChild(td);
-    form.render('checkbox');
-}
-
-function member_update(td, data) {
-    for (var key in data) {
-        if (data[key] == null) {
-            data[key] = '';
-        }
     }
 
-    var inBlacklist = data['defaults_number'] ? true : false;
 
-    $(td).html(`
-    <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
+    function member_add(data) {
+        cnt++;
+        var td = document.createElement('tr');
+        member_update(td, data);
+        tbody.appendChild(td);
+        form.render('checkbox');
+    }
+
+    function member_update(td, data) {
+        for (var key in data) {
+            if (data[key] == null) {
+                data[key] = '';
+            }
+        }
+
+        var inBlacklist = data['defaults_number'] ? true : false;
+
+        $(td).html(`
+        <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
         <td>${data.id}</td>
         <td>${data.student_id}</td>
         <td>${data.name}</td>
@@ -313,6 +317,7 @@ function member_update(td, data) {
             <i 	class="layui-btn layui-btn-sm layui-btn-radius">审核</i>
             </a>
         </td>`);
-}
+    }
 </script>
+
 </html>
