@@ -57,7 +57,6 @@
                     /*layer.msg(JSON.stringify(data.field),function(){
                         location.href='index.html'
                     });*/
-                    console.log(data.field);
                     var that = this;
                     var index = layer.open({
                         type: 3,
@@ -76,7 +75,7 @@
                             } else if (data_res.admintype == 'ground') {
                                 location.href = 'index_groundadmin.html';
                             } else {
-                                location.href = '404.html';
+                                location.href = 'index_superadmin.html';
                             }
                         }
                         else { //login fail

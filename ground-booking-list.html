@@ -47,7 +47,7 @@
                     <div class="layui-card-header">
                         <!-- 添加场地预约先不做-->    
                         <!--没有批量修改预约时间的按钮，若要修改单个订单的预约时间，在“编辑”那栏修改-->
-                        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除
+                        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量取消
                         </button>
                     </div>
                     <div class="layui-card-body layui-table-body layui-table-main">
@@ -58,15 +58,16 @@
                                         <input type="checkbox" lay-filter="checkall" name="" lay-skin="primary">
                                     </th>
                                     <th>ID</th>
+                                    <th>预约人邮箱</th>
                                     <th>预约人学工号</th>
                                     <th>预约人姓名</th>
                                     <th>预约提交时间</th>
                                     <th>场地名</th>
                                     <th>预约开始时间</th>
                                     <th>预约结束时间</th>
-                                    <th>订单状态</th>
                                     <th>是否可以改期</th>
                                     <th>反馈</th>
+                                    <th>订单状态</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -299,7 +300,7 @@
     /*删除*/
     function ground_booking_del(obj, id) {
         //TODO:场地预约不存在时如何提示？
-        layer.confirm('确认要删除吗？', function (index) {
+        layer.confirm('确认要取消吗？', function (index) {
             //发异步删除数据
             del_req(obj, id, false);
         });
@@ -317,7 +318,7 @@
             }
         });
 
-        layer.confirm('确认要删除吗？' + ids.toString(), function (index) {
+        layer.confirm('确认要取消吗？' + ids.toString(), function (index) {
             //捉到所有被选中的，发异步进行删除
             //TODO：场地预约不存在时如何提示？
             var status = true;
@@ -325,7 +326,7 @@
                 status &= del_req(elems[i], ids[i], true);
             }
             // if (status === true) {
-            layer.msg('删除成功', { icon: 1 });
+            layer.msg('取消成功', { icon: 1 });
             // }
             // else {
             //     layer.msg('部分场地预约未能成功删除，请再次尝试', { icon: 5 });
@@ -378,21 +379,26 @@
             stateStr = '已失效';
         }
         data.apply_time = data.apply_time.replace('T','__');
+        data.apply_time = data.apply_time.substring(0,20);
         data.end_time = data.end_time.replace('T','__');
         data.begin_time = data.begin_time.replace('T','__');
+        var real_name = (data.student_name == "") ? "缺失姓名" : data.student_name;
+        var student_id = (data.student_id == "") ? "缺失学工号" : data.student_id;
+        var canChange = (data.can_change) ? "是" : "否";
         if (data.can_change && (data.state == 0 || data.state == 1)) {
             $(td).html(`
             <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
             <td>${data.id}</td>
-            <td>${data.student_id}</td> 
-            <td>${data.student_name}</td>
+            <td>${data.email}</td>
+            <td>${student_id}</td> 
+            <td>${real_name}</td>
             <td>${data.apply_time}</td>
             <td>${data.ground_name}</td>
             <td>${data.begin_time}</td>
             <td>${data.end_time}</td>
-            <td>${stateStr}</td>
-            <td>${data.can_change}</td>
+            <td>${canChange}</td>
             <td>${data.feedback}</td>
+            <td>${stateStr}</td>
             <td class="td-manage">
                 <a title="改期" onclick="ground_booking_edit(this,${data.id})"
                 href="javascript:;">
@@ -402,25 +408,42 @@
                     <i class="layui-icon">&#xe640;</i>
                 </a>
             </td>`);
-        } else {
+        } else if (stateStr == '已失效'){
             $(td).html(`
             <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
             <td>${data.id}</td>
-            <td>${data.student_id}</td> 
-            <td>${data.student_name}</td>
+            <td>${data.email}</td>
+            <td>${student_id}</td> 
+            <td>${real_name}</td>
             <td>${data.apply_time}</td>
             <td>${data.ground_name}</td>
             <td>${data.begin_time}</td>
             <td>${data.end_time}</td>
-            <td>${stateStr}</td>
-            <td>${data.can_change}</td>
+            <td>${canChange}</td>
             <td>${data.feedback}</td>
+            <td>${stateStr}</td>
+            <td class="td-manage">
+            </td>`)
+        } else {
+            $(td).html(`
+            <td><input type="checkbox" name="id" value="${data.id}" lay-skin="primary" lay-filter="authority"></td>
+            <td>${data.id}</td>
+            <td>${data.email}</td>
+            <td>${student_id}</td> 
+            <td>${real_name}</td>
+            <td>${data.apply_time}</td>
+            <td>${data.ground_name}</td>
+            <td>${data.begin_time}</td>
+            <td>${data.end_time}</td>
+            <td>${canChange}</td>
+            <td>${data.feedback}</td>
+            <td>${stateStr}</td>
             <td class="td-manage">
                 <a title="删除" onclick="ground_booking_del(this,${data.id})" href="javascript:;">
                     <i class="layui-icon">&#xe640;</i>
                 </a>
-            </td>`);
-        }
+            </td>`)
+        };
         form.render('checkbox');
     }
 </script>

@@ -44,10 +44,12 @@
                             </div>
                         </form>
                     </div>
+                    <!--批量移出黑名单 还没做
                     <div class="layui-card-header">
                         <button class="layui-btn layui-btn-danger" onclick="removeFromBlacklist()"><i class="layui-icon"></i>批量移出
                         </button>
                     </div>
+                    -->
                     <div class="layui-card-body layui-table-body layui-table-main">
                         <table class="layui-table layui-form">
                             <thead>
@@ -151,7 +153,7 @@
         var search_name = getQueryVariable();
         console.log(search_name);
         if (search_name) {
-            $.ajax(server + 'users/blackList/search/', { // change here?
+            $.ajax(server + 'users/blackList/black_search/', { // change here?
 
             method: 'POST',
             contentType: 'application/json',

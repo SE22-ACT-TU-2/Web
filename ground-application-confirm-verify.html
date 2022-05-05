@@ -68,7 +68,13 @@
                            style="background:#d6d6d6">
                 </div>
             </div>
-            
+            <div class="layui-form-item">
+                <label for="L_is_batch" class="layui-form-label">是否为批量申请</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_is_batch" name="is_batch" autocomplete="off"
+                           class="layui-input" style="background:#d6d6d6">
+                </div>
+            </div>
             <div class="layui-form-item">
                 <label for="L_file" class="layui-form-label">
                     审核材料</label>
@@ -118,9 +124,11 @@
                     console.log("ground-application-confirm-verify信息回显\n");
                     console.log(data);
                     console.log(data[0].student_id);
+                    var is_batch = data[0].is_batch == true ? "是" : "否";
                     $('#L_student_id').val(data[0].student_id);
                     $('#L_name').val(data[0].student_name);
                     $('#L_area').val(data[0].ground_name);
+                    $('#L_is_batch').val(is_batch);
                     $('#L_begin_time').val(data[0].begin_time.replace('T',' '));
                     $('#L_end_time').val(data[0].end_time.replace('T',' '));
                     var image_src = "images/"+data[0].file;
@@ -157,7 +165,7 @@
                 }).done(function (data) {
                     console.log(data);
                     //data.field.is_batch
-                    layer.msg('审核完成', {icon: 5});
+                    layer.msg('审核完成',  { icon: 1, time: 1000 });
 
                 }).fail(function (xhr, status) {
                     console.log(data);

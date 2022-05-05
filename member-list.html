@@ -360,7 +360,7 @@
             }
         }
 
-        var inBlacklist = data['defaults_number'] >= 3 ? '是' : '否';
+        var inBlacklist = data['defaults_number'] > 3 ? '是' : '否';
         var isCsstd = data['is_csstd'] ? '是' : '否';
         var real_name = (data.real_name == "") ? "缺失姓名" : data.real_name;
         var student_id = (data.student_id == "") ? "缺失学工号" : data.student_id;
