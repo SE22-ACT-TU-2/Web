@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理-一苇以航</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/app.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="layui-fluid">
+        
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+                    <form class="layui-form layui-col-space5">
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="username" id="keyword" placeholder="请输入用户昵称" autocomplete="off"
+                                class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="search()"><i
+                                    class="layui-icon">&#xe615;</i>
+                            </button>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block" style="float:right">
+                            <a class="layui-btn layui-btn-small" style="line-height:1.6em" onclick="location.reload()"
+                                title="刷新">
+                                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-card-header">
+                    <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除
+                    </button>
+                    <button class="layui-btn layui-btn-normal" onclick="member_batch_edit()"><i
+                            class="layui-icon">&#xe642;</i>批量修改
+                    </button>
+                </div>
+                <div class="layui-card-body layui-table-body layui-table-main">
+                    <table class="layui-table layui-form">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" lay-filter="checkall" name="" lay-skin="primary">
+                                </th>
+                                <th>ID</th>
+                                <th>学工号</th>
+                                <!--2.0版加的显示字段-->
+                                <th>姓名</th>
+                                <!--2.0版加的显示字段-->
+                                <th>昵称</th>
+                                <th>头像</th>
+                                <th>邮箱</th>
+                                <th>签名</th>
+                                <th>钱包</th>
+                                <!--2.0版加的显示字段-->
+                                <th>违约次数</th>
+                                <!--2.0版加的显示字段-->
+                                <th>黑名单状态</th>
+                                <!--2.0版加的显示字段-->
+                                <th>是否为院内学生</th>
+                                <!--2.0版加的显示字段-->
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-card-body " style="display:none">
+                    <div class="page">
+                        <div>
+                            <a class="prev" href="">&lt;&lt;</a>
+                            <a class="num" href="">1</a>
+                            <span class="current">2</span>
+                            <a class="num" href="">3</a>
+                            <a class="num" href="">489</a>
+                            <a class="next" href="">&gt;&gt;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+
+<script>
+    layui.use(['upload', 'element', 'layer', 'table', 'form'], function () {
+        var $ = layui.jquery
+            , upload = layui.upload
+            , element = layui.element
+            , layer = layui.layer
+            , table = layui.table
+            , form = layui.form;
+
+        table.render({
+            elem: '#demo'
+            // ,height: 800
+            , height: 'full-200'
+            , width: 'full-200'
+            , url: '/updateBookPages' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , cols: [[ //表头
+                { field: 'bookId', title: 'ID', width: 125, }
+                , { field: 'bookName', title: '书名', width: 145 }
+                , { field: 'bookAuthor', title: '作者', width: 140 }
+                , { field: 'publish', title: '出版社', width: 120 }
+                , { field: 'pages', title: '页数', width: 80 }
+                , { field: 'price', title: '价格', width: 80 }
+                , { field: 'bookGrade', title: '评分', width: 60 }
+                , { field: 'isbn', title: 'ISBN', width: 130 }
+                , { field: 'bookIntro', title: '图书简介', width: 130 }
+                , { fixed: 'right', width: 118, title: '操作', align: 'center', toolbar: '#barDemo' }
+            ]]
+        });
+
+        //执行重载
+        var $ = layui.$, active = {
+            reload: function () {
+                var demoReload = $('#demoReload');
+                table.reload('demo', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        bookName: demoReload.val()
+                    }
+                });
+            }
+        };
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        //监听工具条
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            // 删除
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    $.ajax({
+                        url: "/deleteByBookId",
+                        type: "POST",
+                        data: { bookId: data.bookId },
+                        success: function (msg) {
+                            if (msg.code === 0) {
+                                //删除这一行
+                                obj.del();
+                                //关闭弹框
+                                layer.close(index);
+                                layer.msg("删除成功", { icon: 6 });
+                            } else {
+                                layer.msg("删除失败", { icon: 5 });
+                            }
+                        }
+                    });
+                });
+            }
+            // 编辑
+            else if (obj.event === 'edit') {
+                // 回填数据到表单
+
+                updateuser(obj, data);
+            }
+        });
+        //编辑更新用户
+        function updateuser(obj, data) {
+            form.val("add", {
+                "bookId": data.bookId
+                , "bookName": data.bookName
+                , "bookAuthor": data.bookAuthor
+                , "publish": data.publish
+                , "pages": data.pages
+                , "price": data.price
+                , "bookGrade": data.bookGrade
+                , "isbn": data.isbn
+                , "bookIntro": data.bookIntro
+            });
+
+            layer.open({
+                async: false,
+                //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                type: 1,
+                title: "修改图书信息",
+                skin: 'layui-layer-molv',
+                area: ['500px', '700px'],
+                content: $("#open_div"),//引用的弹出层的页面层的方式加载修改界面表单
+            });
+
+            form.on('submit(update_submit)', function (massage) {
+                console.log("message为：", massage);
+                console.log(massage.field);
+                var data1 = massage.field;
+
+                $.ajax({
+                    type: "post",
+                    url: "/updateBook",
+                    data: JSON.stringify(massage.field),
+                    contentType: 'application/json',
+                    datatype: "json",
+                    success: function (msg) {
+                        console.log(msg);
+                        layer.closeAll();//关闭所有的弹出层
+                        if (msg.code === 0) {
+                            layer.msg("修改成功", { icon: 6 });
+                            //刷新数据
+                            $(".layui-laypage-btn").click();
+                        } else {
+                            layer.msg("修改失败", { icon: 5 });
+                        }
+                    }
+                })
+                return false
+
+            })
+        }
+
+
+    });
+</script>
+
+</html>
