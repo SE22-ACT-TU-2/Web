@@ -159,7 +159,7 @@
 
         //根据学工号搜索预约订单
         var search_id = getQueryVariable();
-        console.log(search_id);
+        //console.log(search_id);
         if (search_id) {
             $.ajax(server + 'web/ground_apply/search/', {
             method: 'POST',
@@ -167,7 +167,6 @@
             data: JSON.stringify({student_id: search_id}),
             headers: headers
             }).done(function (data) {
-                console.log(data);
                 data = data.sort(compare('pub_time'));
                 for (var i = 0; i < data.length; i++) {
                     ground_booking_add(data[i]);
@@ -185,7 +184,6 @@
             method: 'GET',
             headers: headers
             }).done(function (data) {
-                console.log(data);
                 data = data.sort(compare('apply_time'));
                 for (var i = 0; i < data.length; i++) {
                     ground_booking_add(data[i]);
@@ -239,7 +237,7 @@
         var url = self.location.href;
         var search_name = getQueryVariable();
         var value = $("#keyword").val();
-        console.log(value);
+        //console.log(value);
         var end = url.indexOf('=');
         if (end != -1) {
             url = url.substring(0, end + 1);

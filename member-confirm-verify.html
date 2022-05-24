@@ -71,7 +71,6 @@
         function () {
             var id = localStorage.member_id_edit;
             localStorage.removeItem('member_id_edit');
-            console.log(id);
             $ = layui.jquery;
             var form = layui.form,
                 layer = layui.layer;
@@ -84,9 +83,7 @@
                     method: 'GET', // do I need to change 'GET' to 'PUT'?
                     headers: headers
                 }).done(function (data) {
-                    console.log("member-confirm-verify信息回显\n");
-                    console.log(data);
-                    console.log(data[0].student_id);
+                    // member-confirm-verify信息回显
                     $('#L_student_id').val(data[0].student_id);
                     $('#L_name').val(data[0].name);
                     var image_src = "images/"+data[0].avatar;
@@ -110,9 +107,8 @@
             //监听提交
             form.on('submit(add)',
                 function (data) {
-                    var isPass = $('input[name="is_csstd"]:checked').val() == 'true' ? true :false;                    console.log("pass? " + isPass);
+                    var isPass = $('input[name="is_csstd"]:checked').val() == 'true' ? true :false;                    
                     data.field.is_csstd = isPass;
-                    console.log(data.field);
                     var index = layer.open({type: 3, icon: 1});
                     var index = layer.open({type: 3, icon: 1});
                 $.ajax(server + `userVerify/${id}/`, {
@@ -121,14 +117,12 @@
                     data: JSON.stringify(data.field),
                     headers: headers
                 }).done(function (data) {
-                    console.log(data);// bug, 勾选框的信息没有更新给data, fuck
+                    // bug, 勾选框的信息没有更新给data, fuck
                     for (var i = 0; i < data.length; i++) {
                         member_add(data[i]); // update the information?
                     }
                     layer.msg('审核成功', {icon: 1, time: 1000}, function () {
                             // kjs_TODO: not work
-                            console.log(data);
-                            console.log('审核成功');
                             //window.parent.location.reload();
                             var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
                             parent.layer.close(index);
@@ -143,7 +137,6 @@
                             
                         });
                 }).fail(function (xhr, status) {
-                    console.log(data);
                     console.log(xhr);
                     console.log(status);
                     if (xhr.status === 404) {

@@ -108,7 +108,6 @@
         function () {
             var id = localStorage.ground_application_confirm_id_edit;
             localStorage.removeItem('ground_application_confirm_id_edit');
-            console.log(id);
             $ = layui.jquery;
             var form = layui.form,
                 layer = layui.layer;
@@ -121,9 +120,7 @@
                     method: 'GET', //场地审核信息获取
                     headers: headers
                 }).done(function (data) {
-                    console.log("ground-application-confirm-verify信息回显\n");
-                    console.log(data);
-                    console.log(data[0].student_id);
+                    // ground-application-confirm-verify信息回显
                     var is_batch = data[0].is_batch == true ? "是" : "否";
                     $('#L_student_id').val(data[0].student_id);
                     $('#L_name').val(data[0].student_name);
@@ -139,7 +136,7 @@
                     console.log(xhr);
                     console.log(status);
                     if (xhr.status === 404) {
-                        layer.msg('该用户不存在', {icon: 5});
+                        layer.msg('该场地申请不存在', {icon: 5});
                     } else {
                         layer.msg("网络错误", {icon: 2});
                     }
@@ -152,9 +149,8 @@
             //监听提交
             form.on('submit(add)',
                 function (data) {
-                    var isPass = $('input[name="pass"]:checked').val() == 'true' ? true :false;                    console.log("pass? " + isPass);
+                    var isPass = $('input[name="pass"]:checked').val() == 'true' ? true :false;                    
                     data.field.pass = isPass;
-                    console.log(data);
                     var index = layer.open({type: 3, icon: 1});
                     var index = layer.open({type: 3, icon: 1});
                 $.ajax(server + `web/ground_verify/${id}/`, {
@@ -163,16 +159,13 @@
                     data: JSON.stringify(data.field),
                     headers: headers
                 }).done(function (data) {
-                    console.log(data);
-                    //data.field.is_batch
                     layer.msg('审核完成',  { icon: 1, time: 1000 });
 
                 }).fail(function (xhr, status) {
-                    console.log(data);
                     console.log(xhr);
                     console.log(status);
                     if (xhr.status === 404) {
-                        layer.msg('该用户不存在', {icon: 5});
+                        layer.msg('该场地申请不存在', {icon: 5});
                     } else {
                         layer.msg("网络错误", {icon: 2});
                     }

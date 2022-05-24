@@ -70,8 +70,6 @@
                 var date = new Date();
                 form.verify({
                     positive_number: function (value, item) {
-                        console.log(value);
-                        console.log(parseFloat(value));
                         if (parseFloat(value) == NaN || parseFloat(value) < 0) {
                             return '价格必须为大于等于0的数字';
                         }
@@ -81,7 +79,6 @@
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
-                        console.log(data.field);
                         var index = layer.open({ type: 3, icon: 1 });
                         $.ajax(server + `web/ground/mul/`, {
                             method: 'POST',

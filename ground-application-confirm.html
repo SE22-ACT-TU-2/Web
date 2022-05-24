@@ -151,7 +151,7 @@
         });
         // 场地申请查询
         var search_student_id = getQueryVariable();
-        console.log(search_student_id);
+        //console.log(search_student_id);
         if (search_student_id) {
             $.ajax(server + 'web/ground_verify/search/', {
             method: 'POST',
@@ -192,9 +192,9 @@
 function search() {
     var url = self.location.href;
     var search_student_id = getQueryVariable();
-    console.log(search_student_id);
+    //console.log(search_student_id);
     var value = $("#keyword").val();
-    console.log(value);
+    //console.log(value);
     var end = url.indexOf('=');
     if (end != -1) {
         url = url.substring(0, end + 1);
@@ -242,8 +242,6 @@ function outAll(argument) {
             //捉到所有被选中的，发异步进行删除
             //TODO：场地申请不存在时如何提示？
             var status = true;
-            console.log(ids);
-            console.log(elems);
             for (var i = 0; i < ids.length; i++) {
                 //var index = layer.open({type: 3, icon: 1});
                 $.ajax(server + `web/ground_verify/show/${ids[i]}/`, {
@@ -251,9 +249,6 @@ function outAll(argument) {
                     headers: headers
                 }).done(function (data) {
                     data[0].is_csstd = true;
-                    console.log(data);
-                    console.log(ids);
-                    console.log(ids[0]);
                     $.ajax(server + `web/ground_verify/${ids[$[i]]}/`, { // here is the bugs
                     method: 'PUT',
                     contentType: 'application/json',

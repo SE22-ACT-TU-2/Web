@@ -69,14 +69,14 @@
                         if (data_res.success === 'true') { //login success
                             localStorage.token = data_res.token;
                             localStorage.admintype = data_res.admintype;
-                            console.log(data_res.admintype);
                             if (data_res.admintype == 'super') {
                                 location.href = 'index_superadmin.html';
                             } else if (data_res.admintype == 'ground') {
                                 location.href = 'index_groundadmin.html';
                             } else {
-                                location.href = 'index_superadmin.html';
+                                location.href = '404.html';
                             }
+                            
                         }
                         else { //login fail
                             layer.msg("用户名或密码错误", { icon: 5 });

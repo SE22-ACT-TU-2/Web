@@ -113,7 +113,6 @@
 <script>
     headers = { 'token': localStorage.token };
     var cnt, tbody;
-    console.log(localStorage);
     layui.use(['laydate', 'form', 'table'], function () {
         var laydate = layui.laydate,
             table = layui.table;
@@ -173,7 +172,7 @@
             icon: 1
         });
         var search_name = getQueryVariable();
-        console.log(search_name);
+        //console.log(search_name);
         if (search_name) {
             $.ajax(server + 'ground/search/', {
             method: 'POST',
@@ -181,7 +180,6 @@
             data: JSON.stringify({name: search_name}),
             headers: headers
             }).done(function (data) {
-                console.log(data);
                 data = data.sort(compare('pub_time'));
                 for (var i = 0; i < data.length; i++) {
                     ground_add(data[i]);
@@ -199,7 +197,6 @@
             method: 'GET',
             headers: headers
             }).done(function (data) {
-                console.log(data);
                 data = data.sort(compare('name'));
                 for (var i = 0; i < data.length; i++) {
                     ground_add(data[i]);
@@ -283,7 +280,7 @@
 
 
     function ground_edit(obj, id) {
-        //TODO:用户不存在时如何提示？
+        //TODO:场地不存在时如何提示？
         localStorage.ground_id_edit = id;
         xadmin.open('编辑', 'ground-edit.html', 600, 400);
     }
@@ -318,7 +315,7 @@
 
     /*删除*/
     function ground_del(obj, id) {
-        //TODO:用户不存在时如何提示？
+        //TODO:场地不存在时如何提示？
         layer.confirm('确认要删除吗？', function (index) {
             //发异步删除数据
             del_req(obj, id, false);

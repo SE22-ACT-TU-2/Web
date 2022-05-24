@@ -147,7 +147,7 @@
             icon: 1
         });
         var search_student_id = getQueryVariable();
-        console.log(search_student_id);
+        //console.log(search_student_id);
         if (search_student_id) {
             $.ajax(server + 'userVerify/search/', {
                 method: 'POST',
@@ -188,9 +188,9 @@
     function search() {
         var url = self.location.href;
         var search_student_id = getQueryVariable();
-        console.log(search_student_id);
+        //console.log(search_student_id);
         var value = $("#keyword").val();
-        console.log(value);
+        //console.log(value);
         var end = url.indexOf('=');
         if (end != -1) {
             url = url.substring(0, end + 1);
@@ -238,11 +238,8 @@
             //捉到所有被选中的，发异步进行删除
             //TODO：用户不存在时如何提示？
             var status = true;
-            console.log(ids);
-
             for (var i = 0; i < ids.length; i++) {
                 id = ids[i];
-                console.log(id);
                 var datas = [];
                 $.ajax(server + `userVerify/show/${id}/`, {
                     method: 'GET',
@@ -258,7 +255,6 @@
                     layer.close(index);
                 });
             }
-            console.log(datas);
 
             for (var i = 0; i < ids.length; i++) {
                 $.ajax(server + `userVerify/${id}/`, {
@@ -267,10 +263,8 @@
                         data: JSON.stringify(datas[i]),
                         headers: headers
                     }).done(function (data) {
-                        console.log(id + "通过");
                         layer.msg('通过', { icon: 2 });
                     }).fail(function (xhr, status) {
-                        console.log(data);
                         console.log(xhr);
                         console.log(status);
                         if (xhr.status === 404) {

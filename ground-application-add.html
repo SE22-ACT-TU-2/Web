@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="x-admin-sm">
-
+<!--似乎没用到-->
 <head>
     <meta charset="UTF-8">
     <title>添加场地预约-一苇以航</title>
@@ -100,7 +100,6 @@
                     method: 'GET',
                     headers: headers
                 }).done(function (data) {
-                    console.log(data);
                     for (var i = 0; i < data.length; i++) {
                         insert_option(form, owner, data[i].id, `${data[i].name}(${data[i].id})`);
                     }
@@ -121,7 +120,6 @@
                     method: 'GET',
                     headers: headers
                 }).done(function (data) {
-                    console.log(data);
                     for (var i = 0; i < data.length; i++) {
                         insert_option(form, block, data[i].id, `${data[i].name}(${data[i].id})`);
                     }
@@ -138,7 +136,6 @@
                     method: 'GET',
                     headers: headers
                 }).done(function (data) {
-                    console.log(data);
                     for (var i = 0; i < data.length; i++) {
                         insert_option(form, type, data[i].id, `${data[i].name}(${data[i].id})`);
                     }
@@ -159,7 +156,6 @@
                     method: 'GET',
                     headers: headers
                 }).done(function (data) {
-                    console.log(data);
                     for (var i = 0; i < data.length; i++) {
                         insert_option(form, location, data[i].id, `${data[i].name}(${data[i].id})`);
                     }
@@ -213,7 +209,6 @@
                         }
                     },
                     positive_int: function (value, item) {
-                        console.log(value);
                         if (!/^\d*$/.test(value) || parseInt(value) <= 0) {
                             return '人数必须是正整数';
                         }
@@ -226,7 +221,6 @@
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
-                        console.log(data);
                         if (!time_check(data.field.begin_time, data.field.end_time)) {
                             layer.msg('开始时间不能晚于结束时间', {
                                 icon: 5,
@@ -260,7 +254,7 @@
                             console.log(xhr);
                             console.log(status);
                             if (xhr.status === 400) {
-                                layer.msg(`活动 ${data.field.name} 已存在`, { icon: 5 });
+                                layer.msg(`场地申请 ${data.field.name} 已存在`, { icon: 5 });
                             } else {
                                 layer.msg("网络错误", { icon: 2 });
                             }
@@ -269,37 +263,6 @@
                         });
                         return false;
                     });
-
-                var org = $('#L_org');
-                form.on('select(block_select)', function (data) {
-                    var index = layer.open({ type: 3, icon: 1 });
-                    org.html('<option></option>');
-                    $.ajax(server + `blocks/organizations/${data.value}/`, {
-                        method: 'GET',
-                        headers: headers
-                    }).done(function (res_data) {
-                        console.log(res_data);
-                        if (res_data.length === 0) {
-                            $(org).parents('div.layui-form-item').attr('style', 'display:none');
-                            $(org).removeAttr('name');
-                            $(org).removeAttr('lay-verify');
-                        } else {
-                            $(org).parents('div.layui-form-item').removeAttr('style');
-                            $(org).attr('name', 'org');
-                            $(org).attr('lay-verify', 'required');
-                            for (var i = 0; i < res_data.length; i++) {
-                                insert_option(form, org, res_data[i].id, `${res_data[i].name}(${res_data[i].id})`);
-                            }
-                            form.render('select');
-                        }
-                    }).fail(function (xhr, status) {
-                        console.log(xhr);
-                        console.log(status);
-                        layer.msg("网络错误", { icon: 2 });
-                    }).always(function () {
-                        layer.close(index);
-                    });
-                });
             });
     </script>
 </body>

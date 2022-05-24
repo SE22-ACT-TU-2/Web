@@ -94,7 +94,8 @@
 <script>
     headers = { 'token': localStorage.token };
     var cnt, tbody;
-    layui.use(['laydate', 'form'], function () { //? do I need to use other things?
+    const maximum_default = 3;
+    layui.use(['laydate', 'form'], function () {
         var laydate = layui.laydate;
         window.form = layui.form;
 
@@ -151,16 +152,15 @@
             icon: 1
         });
         var search_name = getQueryVariable();
-        console.log(search_name);
+        //console.log(search_name);
         if (search_name) {
-            $.ajax(server + 'users/blackList/black_search/', { // change here?
+            $.ajax(server + 'users/blackList/black_search/', {
 
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({name: search_name}),
             headers: headers
             }).done(function (data) {
-                console.log(data);
                 for (var i = 0; i < data.length; i++) {
                     member_add(data[i]);
                 }
@@ -173,11 +173,10 @@
             });
         }
         else {
-            $.ajax(server + 'users/blackList/', { // change here?
+            $.ajax(server + 'users/blackList/', {
             method: 'GET',
             headers: headers
             }).done(function (data) {
-                console.log(data);
                 for (var i = 0; i < data.length; i++) {
                     member_add(data[i]);
                 }
@@ -191,37 +190,11 @@
         }
     });
 
-    /*
-    // 用户-停用
-    function member_stop(obj, id) {
-        layer.confirm('确认要停用吗？', function (index) {
-
-            if ($(obj).attr('title') == '启用') {
-
-                //发异步把用户状态进行更改
-                $(obj).attr('title', '停用')
-                $(obj).find('i').html('&#xe62f;');
-
-                $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
-                layer.msg('已停用!', { icon: 5, time: 1000 });
-
-            } else {
-                $(obj).attr('title', '启用')
-                $(obj).find('i').html('&#xe601;');
-
-                $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
-                layer.msg('已启用!', { icon: 5, time: 1000 });
-            }
-
-        });
-    }
-    */
-
     function search() {
         var url = self.location.href;
         var search_name = getQueryVariable();
         var value = $("#keyword").val();
-        console.log(value);
+        //console.log(value);
         var end = url.indexOf('=');
         if (end != -1) {
             url = url.substring(0, end + 1);
@@ -243,21 +216,6 @@
         var pair = query.split("=");
         return decodeURI(pair[1]);
     }
-
-    // 将选中的黑名单用户移出黑名单
-    function removeFromBlacklist(argument) {
-        var ids = [];
-        var elems = [];
-
-        // 获取选中的id 
-        $('tbody input').each(function (index, el) {
-            if ($(this).prop('checked')) {
-                ids.push($(this).val());
-                elems.push($(this));
-            }
-        });
-    }
-
 
     function delAll(argument) {
         var ids = [];
@@ -301,7 +259,7 @@
         });
     }
 
-    /*用户-删除*/
+    /*用户-移出黑名单*/
     function blacklist_out(obj, id) {
         //TODO:用户不存在时如何提示？
         layer.confirm('确认要移出吗？', function (index) {
@@ -310,9 +268,7 @@
                 method: 'PUT',
                 headers: headers
             }).done(function (data) {
-                console.log("before:" + data.defaults_number);
-                data.defaults_number = 2;
-                console.log("after:" + data.defaults_number);
+                data.defaults_number = maximum_default;
                 layer.msg('已移出!', { icon: 1, time: 1000 });
             }).fail(function (xhr, status) {
                 console.log(xhr);

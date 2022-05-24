@@ -92,14 +92,12 @@
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
-                        console.log(data.field);
                         //发异步，把数据提交给php
                         var index = layer.open({ type: 3, icon: 1 });
                         $.ajax(server + 'register/', {
                             method: 'POST',
                             data: JSON.stringify(data.field)
                         }).done(function (data) {
-                            console.log(data);
                             if (data.success === 'true') {
                                 layer.alert("注册成功", {
                                     icon: 6,

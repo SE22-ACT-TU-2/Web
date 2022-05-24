@@ -89,30 +89,23 @@
                         var edit_choice = data.field.edit_choice == "true" ? true : false;
                         var inBlacklist = data.field.blacklist == "true" ? true : false;
                         var defaults_number_input = data.field.defaults_number;
-                        console.log("批量修改" + edit_choice);
-                        console.log("是否在黑名单" + inBlacklist);
-                        console.log("违约次数修改为" + defaults_number_input);
                         for (var i = 0; i < ids.length; i++) {
                             var id = ids[i];
                             var index = layer.open({ type: 3, icon: 1 });
-                            console.log("id:" + id);
-
-                            if (edit_choice) { // change state blacklist
+                            if (edit_choice) { // change state in blacklist
                                 data.field.content = "state";
-                                if (inBlacklist) {
-                                    data.field.is_black = "in";
-                                    data.field.defaults_number = 4; // put in blacklist
-                                } else {
-                                    data.field.is_black = "out";
-                                    data.field.defaults_number = 3; // remove from blacklist, if not in bl?
+                                if (inBlacklist) { // put in blacklist
+                                        data.field.is_black = "in";
+                                        data.field.defaults_number = 4; 
+                                } else { // remove from blacklist, if not in bl -- backend do this, not frontend
+                                        data.field.is_black = "out";
+                                        data.field.defaults_number = 3; 
                                 }
                             } else { // change the defaults_number
                                 data.field.content = "number";
                                 data.field.is_black = null;
                                 data.field.defaults_number = defaults_number_input;
                             }
-                            console.log(data.field);
-
 
                             $.ajax(server + `users/mul/${id}/`, {
                                 method: 'PUT',
@@ -120,11 +113,8 @@
                                 data: JSON.stringify(data.field),
                                 headers: headers
                             }).done(function (data) {
-
                                 layer.msg('修改成功', { icon: 1, time: 1000 }, function () {
                                     // kjs_TODO: not work
-                                    console.log(data);
-                                    console.log('修改成功');
                                     try {
                                         window.parent.location.reload();//似乎在
                                         var index = parent.layer.getFrameIndex(window.name);//关闭当前页面

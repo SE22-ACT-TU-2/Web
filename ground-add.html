@@ -28,7 +28,7 @@
                     <label for="L_name" class="layui-form-label">
                         <span class="x-red">*</span>场地名</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="L_name" name="name" lay-verify="required|limit100" autocomplete="off"
+                        <input type="text" id="L_name" name="name" lay-verify="required|limit20" autocomplete="off"
                             class="layui-input">
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                 <div class="layui-form-item">
                     <label for="L_description" class="layui-form-label">描述</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="description" lay-verify="limit500" autocomplete="off"
+                        <input type="text" name="description" lay-verify="limit100" autocomplete="off"
                             class="layui-input">
                     </div>
                 </div>
@@ -123,7 +123,6 @@
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
-                        console.log(data);
                         $.ajax(server + `add_ground/`, {
                             method: 'POST',
                             data: JSON.stringify(data.field),
@@ -180,32 +179,18 @@
 
 
                 //自定义验证规则
-                var date = new Date();
                 form.verify({
+                    limit20: function (value) {
+                        if (value.length > 20) {
+                            return '场地名长度不能超过20个字符';
+                        }
+                    },
                     limit100: function (value) {
                         if (value.length > 100) {
-                            return '长度不能超过100个字符';
+                            return '描述长度不能超过100个字符';
                         }
                     },
-                    limit500: function (value) {
-                        if (value.length > 500) {
-                            return '长度不能超过500个字符';
-                        }
-                    },
-                    /*
-                    time: function (value, item) {
-                        if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(value)) {
-                            return '时间格式必须为yyyy-MM-ddTHH:mm:ss';
-                        }
-                        timestamp = Date.parse(value);
-                        if (isNaN(timestamp)) {
-                            return '时间范围非法';
-                        }
-                    },
-                    */
                     positive_number: function (value, item) {
-                        console.log(value);
-                        console.log(parseFloat(value));
                         if (parseFloat(value) == NaN || parseFloat(value) < 0) {
                             return '价格必须为大于等于0的数字';
                         }
@@ -232,7 +217,6 @@
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
-                        console.log(data);
                         /* 先不做时间验证
                         var timeCheck = time_check(data.field.begin_time, data.field.end_time);
                         console.log("timeCheck:" + timeCheck);

@@ -124,7 +124,6 @@
 
                 var id = localStorage.member_id_edit;
                 localStorage.removeItem('member_id_edit');
-                console.log(id);
                 $ = layui.jquery;
                 var form = layui.form,
                     layer = layui.layer;
@@ -141,22 +140,6 @@
                         method: 'GET',
                         headers: headers
                     }).done(function (data) {
-                        console.log(data);
-                        /*
-                        var is_csstd = $('#L_is_csstd').val();
-                        console.log("$('#L_is_csstd') = " + is_csstd);
-                        var whetherCooperation = (is_csstd == true)? true : false;
-                        var radio = document.getElementsByName("is_csstd");
-                        var radioLength = radio.length;
-                        console.log("whetherCooperation:"+whetherCooperation);
-                        for (var i = 0; i < radioLength; i++) {
-                            console.log(i, radio[i].value);
-                            if (whetherCooperation == radio[i].value) {
-                                $(radio[i]).click();
-                                console.log(whetherCooperation);
-                            }
-                        }
-                        */
                         $("input[name='is_csstd']").attr("disabled", "disabled");// 灰禁is_csstd单选框
                         $("input[name='is_csstd']").next().addClass('layui-radio-disbaled layui-disabled');
                     }).fail(function (xhr, status) {
@@ -175,8 +158,7 @@
                         method: 'GET',
                         headers: headers
                     }).done(function (data) {
-                        console.log("member-edit信息回显\n");
-                        console.log(data);
+                        //member-edit信息回显
                         var inBlacklist = $('#inBlacklist') ? true : false;
                         $('#L_id').val(data.id);
                         $('#L_name').val(data.name);
@@ -225,9 +207,8 @@
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
-                        console.log(data.field);
                         var index = layer.open({ type: 3, icon: 1 });
-                        $.ajax(server + `users/${id}/`, {
+                        $.ajax(server + `users/sig/${id}/`, {
                             method: 'PUT',
                             contentType: 'application/json',
                             data: JSON.stringify(data.field),
@@ -235,22 +216,18 @@
                         }).done(function (data) {
                             layer.msg('修改成功', { icon: 1, time: 1000 }, function () {
                                 // kjs_TODO: not work
-                                console.log(data);
-                                console.log('修改成功');
-                                window.parent.location.reload();
-                                var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
-                                parent.layer.close(index);
-                                /*
                                 try {
                                     //window.parent.location.reload();//似乎在本地运行，会跨域报错
+                                    window.parent.location.reload();
                                     var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
                                     parent.layer.close(index);
                                 } catch (DOMException) {
                                     ;
-                                }*/
+                                }
 
                             });
                         }).fail(function (xhr, status) {
+                            console.log(data.field)
                             console.log(xhr);
                             console.log(status);
                             if (xhr.status === 400) {
