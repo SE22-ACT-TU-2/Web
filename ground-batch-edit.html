@@ -26,7 +26,7 @@
             <form class="layui-form">
                 <div class="layui-form-item">
                     <label for="L_ground_type" class="layui-form-label">
-                        <span class="x-red">*</span>选择要价格调整的场地</label>
+                        <span class="x-red">*</span>要价格调整的场地类型</label>
                     <!--无需勾选-->
                     <div class="layui-input-inline">
                         <select name="area" lay-verify="required">
@@ -67,7 +67,6 @@
                 //无需信息回显
 
                 //自定义验证规则
-                var date = new Date();
                 form.verify({
                     positive_number: function (value, item) {
                         if (parseFloat(value) == NaN || parseFloat(value) < 0) {
@@ -99,10 +98,8 @@
                         }).fail(function (xhr, status) {
                             console.log(xhr);
                             console.log(status);
-                            if (xhr.status === 400) {
-                                layer.msg('昵称不能为空', { icon: 5 });
-                            } else if (xhr.status === 404) {
-                                layer.msg('该用户不存在', { icon: 5 });
+                            if (xhr.status === 404) {
+                                layer.msg('该场地不存在', { icon: 5 });
                             } else {
                                 layer.msg('网络错误', { icon: 2 });
                             }

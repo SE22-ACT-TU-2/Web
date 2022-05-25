@@ -37,7 +37,7 @@
                 </div>
                 <div class="layui-form-item">
                     <label for="L_name" class="layui-form-label">
-                        <span class="x-red">*</span>场地名</label>
+                        场地名</label>
                     <div class="layui-input-inline">
                         <input type="text" id="L_name" name="name" disabled="disabled" autocomplete="off"
                             class="layui-input" style="background:#d6d6d6">
@@ -67,7 +67,7 @@
                 </div>
                 <div class="layui-form-item">
                     <label for="L_apply_needed" class="layui-form-label">
-                        <span class="x-red">*</span>预约时是否要申请</label>
+                        预约时是否要申请</label>
                     <div class="layui-input-inline">
                         <input type="radio" name="apply_needed" value=true title="是" checked>
                         <input type="radio" name="apply_needed" value=false title="否">
@@ -90,7 +90,7 @@
                 <div class="layui-form-item">
                     <label for="L_description" class="layui-form-label">描述</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="description" lay-verify="limit500" autocomplete="off"
+                        <input type="text" name="description" lay-verify="limit100" autocomplete="off"
                             class="layui-input">
                     </div>
                 </div>
@@ -151,7 +151,7 @@
                         ;
                     });
 
-                    
+
                     //ground-edit信息回显
                     $.ajax(server + `web/ground/${id}/`, {
                         method: 'GET',
@@ -160,7 +160,7 @@
                         // ground-edit信息回显                   
                         // apply_needed单选框信息回显
                         var apply_needed = data[0].apply_needed;
-                        var whetherCooperation = (apply_needed == true)? 'true' : 'false';
+                        var whetherCooperation = (apply_needed == true) ? 'true' : 'false';
                         var radio = document.getElementsByName("apply_needed");
                         var radioLength = radio.length;
                         for (var i = 0; i < radioLength; i++) {
@@ -192,19 +192,6 @@
                         layer.close(index);
                     });
                 }
-
-                form.verify({
-                    nickname: function (value, item) {
-                        if (value.length > 10) {
-                            return '昵称长度不能超过10个字符';
-                        }
-                    },
-                    sign: function (value, item) {
-                        if (value.length > 100) {
-                            return '签名长度不能超过100个字符';
-                        }
-                    }
-                });
 
                 //监听提交
                 form.on('submit(add)',
@@ -266,8 +253,12 @@
                 })
 
                 //自定义验证规则
-                var date = new Date();
                 form.verify({
+                    limit100: function (value) {
+                        if (value.length > 100) {
+                            return '描述长度不能超过100个字符';
+                        }
+                    },
                     positive_number: function (value, item) {
                         if (parseFloat(value) == NaN || parseFloat(value) < 0) {
                             return '价格必须为大于等于0的数字';
@@ -277,8 +268,8 @@
 
                 // input like, 04:00
                 function time_format_modify(time) {
-                    var hour = time.substring(0,2);
-                    var min = time.substring(3,5);
+                    var hour = time.substring(0, 2);
+                    var min = time.substring(3, 5);
                     return hour + "点" + min + "分";
                 }
 
