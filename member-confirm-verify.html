@@ -122,19 +122,14 @@
                         member_add(data[i]); // update the information?
                     }
                     layer.msg('审核成功', {icon: 1, time: 1000}, function () {
-                            // kjs_TODO: not work
-                            //window.parent.location.reload();
-                            var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
-                            parent.layer.close(index);
-                            /*
+                            // kjs_TODO: not work                   
                             try {
-                                //window.parent.location.reload();//似乎在本地运行，会跨域报错
+                                window.parent.location.reload();//似乎在本地运行，会跨域报错
                                 var index = parent.layer.getFrameIndex(window.name);//关闭当前页面
                                 parent.layer.close(index);
                             } catch (DOMException) {
                                 ;
-                            }*/
-                            
+                            }
                         });
                 }).fail(function (xhr, status) {
                     console.log(xhr);
