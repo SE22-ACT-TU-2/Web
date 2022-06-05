@@ -263,7 +263,7 @@
                         data: JSON.stringify(datas[i]),
                         headers: headers
                     }).done(function (data) {
-                        layer.msg('通过', { icon: 2 });
+                        layer.msg('通过', {icon: 1, time: 1000});
                     }).fail(function (xhr, status) {
                         console.log(xhr);
                         console.log(status);
