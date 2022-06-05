@@ -7,12 +7,14 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
-          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+        content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
     <link rel="stylesheet" href="./css/font.css">
     <link rel="stylesheet" href="./css/xadmin.css">
-    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script src="./lib/layui-v2.6.8/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
+    <script src="./js/jquery.min.js"></script>
     <script src="./js/app.js"></script>
+    <script src="./lib/laydate/laydate.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
     <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -101,12 +103,22 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="L_new_begin_time" class="layui-form-label">
-                    <span class="x-red">*</span>新开始时间</label>
-                <div class="layui-input-inline">
+                <label for="L_booking_range" class="layui-form-label">
+                    <span class="x-red">*</span>新预约时间段</label>
+                <!--
+                    <div class="layui-input-inline">
                     <input type="text" id="L_new_begin_time" name="new_begin_time" autocomplete="off" class="layui-input">
+                </div>-->
+                <div class="layui-inline" id="L_booking_range">
+                    <div class="layui-input-inline">
+                        <input type="text" id="L_new_begin_time" class="layui-input" placeholder="开始时间">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" id="L_new_end_time" class="layui-input" placeholder="结束时间">
+                    </div>
                 </div>
             </div>
+            <!--
             <div class="layui-form-item">
                 <label for="L_new_end_time" class="layui-form-label">
                     <span class="x-red">*</span>新结束时间</label>
@@ -114,6 +126,7 @@
                     <input type="text" id="L_new_end_time" name="new_end_time" autocomplete="off" class="layui-input">
                 </div>
             </div>
+            -->
             <div class="layui-form-item">
                 <label for="L_repass" class="layui-form-label"></label>
                 <button class="layui-btn" lay-filter="add" lay-submit="">提交</button>
@@ -166,6 +179,7 @@
             //监听提交
             form.on('submit(add)',
                 function (data) {
+                    console.log(data.field);
                     var new_begin_hour = data.field.new_begin_time.substring(0,2);
                     var new_begin_min = data.field.new_begin_time.substring(3,5);
                     var new_begin_time = data.field.new_date + ' ' + new_begin_hour + ':' + new_begin_min + ':00';
@@ -233,6 +247,30 @@
                 trigger: 'click',
                 */
             })
+
+            laydate.render({
+            elem: '#L_booking_range',//开始时间和结束时间所在 input 框的父选择器
+            //设置开始日期、终止日期的 input 选择器
+            type: 'time',
+            range: ['#L_new_begin_time', '#L_new_end_time'], //数组格式为 layui 2.6.6 开始新增
+            format:'HH点mm分',
+            })
+            
+            laydate.render({
+                elem: '#L_new_begin_time',
+                trigger: 'click',
+                theme: '#286090',
+                btns: ['clear', 'confirm'],//只出现确定,清空按钮
+                format: 'HH点mm分', //可任意组合
+            });
+            laydate.render({
+                elem: '#L_new_end_time',
+                trigger: 'click',
+                theme: '#286090',
+                btns: ['clear', 'confirm'],//只出现确定,清空按钮
+                format: 'HH点mm分', //可任意组合
+            });
+            
 
             //自定义验证规则
             var date = new Date();

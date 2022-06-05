@@ -66,23 +66,29 @@
                         <span class="x-red">*</span>预约时是否要申请</label>
                     <div class="layui-input-inline">
                         <input type="radio" name="apply_needed" value=True title="是" checked>
-                            <input type="radio" name="apply_needed" value=False title="否">
+                        <input type="radio" name="apply_needed" value=False title="否">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label for="L_begin_time" class="layui-form-label">
                         <span class="x-red">*</span>开始时间</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="L_begin_time" name="begin_time" lay-verify="required"
-                            autocomplete="off" class="layui-input">
+                        <input type="text" id="L_begin_time" name="begin_time" value="08点00分" autocomplete="off"
+                            class="layui-input" disabled="disabled" style="background:#d6d6d6">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <span class="x-red">*</span>固定
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label for="L_end_time" class="layui-form-label">
                         <span class="x-red">*</span>结束时间</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="L_end_time" name="end_time" lay-verify="required" autocomplete="off"
-                            class="layui-input">
+                        <input type="text" id="L_end_time" name="end_time" value="22点00分" autocomplete="off"
+                            class="layui-input" disabled="disabled" style="background:#d6d6d6">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <span class="x-red">*</span>固定
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -96,8 +102,8 @@
                     <label for="L_image" class="layui-form-label">场地图片</label>
                     <button type="button" class="layui-btn" id="L_upload_image">
                         <i class="layui-icon" id="L_upload_image">&#xe67c;</i>上传图片
-                      </button>
-                      <!--
+                    </button>
+                    <!--
                     <div class="layui-input-inline">
                         <input type="text" name="avatar" lay-verify="limit500" autocomplete="off"
                             class="layui-input">
@@ -129,19 +135,20 @@
                             contentType: 'application/json',
                             headers: headers
                         }).done(function (data) {
+                            console.log(data.field);
                             layer.alert("添加场地成功", {
                                 icon: 1,
                                 title: '提示'
                             }, function (index) {
-                                layer.close(index);		 	
-                                setTimeout(function () { 
+                                layer.close(index);
+                                setTimeout(function () {
                                     $(".container").addClass("hidden");
                                     $(".page3").removeClass("hidden");
                                 }, 500)
                                 //关闭当前frame
-                                // xadmin.close();
+                                xadmin.close();
                                 // 可以对父窗口进行刷新 
-                                //xadmin.father_reload();
+                                xadmin.father_reload();
                             });
                         }).fail(function (xhr, status) {
                             console.log(xhr);
@@ -158,11 +165,32 @@
                         return false;
                     });
 
+                function getDate(timeString) {
+                    var hour = parseInt(timeString.substring(0, 2));
+                    var min = parseInt(timeString.substring(3, 5));
+                    var date = new Date(0, 0, 0, hour, min, 0);
+                    return date;
+                }
+
                 laydate.render({
                     elem: '#L_begin_time',
                     type: 'time',
                     format: 'HH点mm分',
                     trigger: 'click',
+                    change: function (value) {
+                        console.log(value); //得到日期生成的值，如：HH点mm分
+                        var startDate = getDate(value);
+                        var endDate = getDate($('#L_end_time').val());
+                        if (startDate != null) {
+                            if (endDate != null) {
+                                if (endDate < startDate) {
+                                    layer.msg('结束时间不能小于等于开始时间');
+                                    var index=parent.layer.getFrameIndex(window.name); //获取当前窗口的name
+                                    parent.layer.close(index);//关闭窗口
+                                }
+                            }
+                        }
+                    }
                 })
 
                 laydate.render({
@@ -170,11 +198,20 @@
                     type: 'time',
                     format: 'HH点mm分',
                     trigger: 'click',
-                    /*
-                    type: 'datetime',
-                    format: 'yyyy-MM-ddTHH:mm:ss',
-                    trigger: 'click',
-                    */
+                    change: function(value) {
+                        console.log(value);//回调end_time
+                        var endDate = getDate(value);
+                        var startDate = getDate($('#L_begin_time').val());
+                        if (startDate != null) {
+                            if (endDate != null) {
+                                if (endDate < startDate) {
+                                    layer.msg('结束时间不能小于等于开始时间');
+                                    var index=parent.layer.getFrameIndex(window.name); //获取当前窗口的name
+                                    parent.layer.close(index);//关闭窗口
+                                }
+                            }
+                        }
+                    }
                 })
 
 
@@ -198,36 +235,25 @@
                 });
 
                 var upload = layui.upload;
-   
+
                 //执行实例
                 var uploadInst = upload.render({
                     elem: '#L_upload_image'
-                    ,url: 'image/'
-                    ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                    , url: 'server_files/groundImg'
+                    , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
                         layer.load(); //上传loading
                     }
-                    ,done: function(res, index, upload){
+                    , done: function (res, index, upload) {
                         layer.closeAll('loading'); //关闭loading
                     }
-                    ,error: function(index, upload){
+                    , error: function (index, upload) {
                         layer.closeAll('loading'); //关闭loading
                     }
-                    });    
+                });
 
                 //监听提交
                 form.on('submit(add)',
                     function (data) {
-                        /* 先不做时间验证
-                        var timeCheck = time_check(data.field.begin_time, data.field.end_time);
-                        console.log("timeCheck:" + timeCheck);
-                        if (!time_check(data.field.begin_time, data.field.end_time)) {
-                            layer.msg('开始时间不能晚于结束时间', {
-                                icon: 5,
-                                anim: 6,
-                            })
-                            return false;
-                        }
-                        */
                         $.ajax(server + 'web/ground/add_ground/', {
                             method: 'POST',
                             contentType: 'application/json',
@@ -244,11 +270,11 @@
                                     $(".page3").removeClass("hidden");
                                 }, 500)
                                 //关闭当前frame
-                                // xadmin.close();
+                                xadmin.close();
                                 // 可以对父窗口进行刷新
-                                //xadmin.father_reload();
-                                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                                // parent.layer.close(index); //再执行关闭
+                                xadmin.father_reload();
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭
                             });
                         }).fail(function (xhr, status) {
                             console.log(xhr);
