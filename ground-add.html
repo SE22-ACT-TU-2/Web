@@ -111,7 +111,7 @@
                 </div>
                 <div class="layui-form-item">
                     <label for="L_repass" class="layui-form-label"></label>
-                    <button class="layui-btn" lay-filter="add" lay-submit="" type="button">添加</button>
+                    <button class="layui-btn" id="L_submit" lay-filter="add" lay-submit="" type="button">添加</button>
                 </div>
             </form>
         </div>
@@ -185,7 +185,7 @@
                             if (endDate != null) {
                                 if (endDate < startDate) {
                                     layer.msg('结束时间不能小于等于开始时间');
-                                    var index=parent.layer.getFrameIndex(window.name); //获取当前窗口的name
+                                    var index = parent.layer.getFrameIndex(window.name); //获取当前窗口的name
                                     parent.layer.close(index);//关闭窗口
                                 }
                             }
@@ -198,7 +198,7 @@
                     type: 'time',
                     format: 'HH点mm分',
                     trigger: 'click',
-                    change: function(value) {
+                    change: function (value) {
                         console.log(value);//回调end_time
                         var endDate = getDate(value);
                         var startDate = getDate($('#L_begin_time').val());
@@ -206,7 +206,7 @@
                             if (endDate != null) {
                                 if (endDate < startDate) {
                                     layer.msg('结束时间不能小于等于开始时间');
-                                    var index=parent.layer.getFrameIndex(window.name); //获取当前窗口的name
+                                    var index = parent.layer.getFrameIndex(window.name); //获取当前窗口的name
                                     parent.layer.close(index);//关闭窗口
                                 }
                             }
@@ -236,18 +236,16 @@
 
                 var upload = layui.upload;
 
-                //执行实例
-                var uploadInst = upload.render({
+                //常规使用 - 普通图片上传
+                upload.render({
                     elem: '#L_upload_image'
-                    , url: 'server_files/groundImg'
-                    , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
-                        layer.load(); //上传loading
-                    }
-                    , done: function (res, index, upload) {
-                        layer.closeAll('loading'); //关闭loading
-                    }
-                    , error: function (index, upload) {
-                        layer.closeAll('loading'); //关闭loading
+                    , url: 'web/ground/add_ground/' //此处配置你自己的上传接口即可
+                    , auto: false
+                    //,multiple: true
+                    , bindAction: '#L_submit'
+                    , done: function (res) {
+                        layer.msg('上传成功');
+                        console.log(res)
                     }
                 });
 
