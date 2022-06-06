@@ -100,7 +100,7 @@
                 </div>
                 <div class="layui-form-item">
                     <label for="L_image" class="layui-form-label">场地图片</label>
-                    <button type="button" class="layui-btn" id="L_upload_image">
+                    <button type="button" class="layui-btn" id="L_upload_image" name = "picture">
                         <i class="layui-icon" id="L_upload_image">&#xe67c;</i>上传图片
                     </button>
                     <!--
@@ -210,8 +210,10 @@
                     , headers: {
                         token: localStorage.token
                     }
-                    , before: function () {
-                        this.data = {
+                    ,contentType:"application/json;charset=UTF-8"
+                    ,before: function () {
+                        this.data = JSON.stringify(
+                        {
                             id: $('#L_id').val(),
                             apply_needed: $('#L_apply_needed').val(),
                             area: $('#L_area').val(),
@@ -220,7 +222,7 @@
                             end_time: $('#L_end_time').val(),
                             name: $('#L_name').val(),
                             price: $('#L_price').val()
-                        };
+                        });// 看这里 看这里 看这里
                         console.log(this.data)
                     }
                     , done: function (res) {

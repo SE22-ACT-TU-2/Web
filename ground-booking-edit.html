@@ -99,7 +99,7 @@
                     <label for="L_new_date" class="layui-form-label">
                         <span class="x-red">*</span>新预约日期</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="L_new_date" name="new_date" autocomplete="off" class="layui-input">
+                        <input type="text" id="L_new_date" name="new_date" autocomplete="off" class="layui-input" lay-verify="required|later_than_today">
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -111,10 +111,10 @@
                 </div>-->
                     <div class="layui-inline" id="L_booking_range">
                         <div class="layui-input-inline">
-                            <input type="text" id="L_new_begin_time" class="layui-input" placeholder="开始时间" lay-verify="required">
+                            <input type="text" id="L_new_begin_time" class="layui-input" placeholder="开始时间" lay-verify="required|time_range">
                         </div>
                         <div class="layui-input-inline">
-                            <input type="text" id="L_new_end_time" class="layui-input" placeholder="结束时间" lay-verify="required">
+                            <input type="text" id="L_new_end_time" class="layui-input" placeholder="结束时间" lay-verify="required|time_range">
                         </div>
                     </div>
                 </div>
@@ -213,6 +213,15 @@
                         if (parseFloat(value) == NaN || parseFloat(value) <= 0) {
                             return '价格必须为大于等于0的数字';
                         }
+                    },
+                    later_than_today: function (value) {
+
+                    },
+                    time_range: function(value) {
+                        var hour = value.substring(0, 2);
+                        var min = value.substring(3, 5);
+                        int hour parseFloat(hour);
+                        if (hour <)
                     }
                 });
 
