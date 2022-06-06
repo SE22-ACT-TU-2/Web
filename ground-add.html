@@ -258,6 +258,7 @@
                             data: JSON.stringify(data.field),
                             headers: headers
                         }).done(function (data) {
+                            console.log(data);
                             layer.alert("增加场地成功", {
                                 icon: 1,
                                 title: '提示'
