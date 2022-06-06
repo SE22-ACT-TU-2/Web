@@ -77,14 +77,14 @@
                     <label for="L_begin_time" class="layui-form-label">开始时间</label>
                     <div class="layui-input-inline">
                         <input type="text" id="L_begin_time" name="begin_time" lay-verify="required" autocomplete="off"
-                            class="layui-input">
+                            class="layui-input" disabled="disabled" style="background:#d6d6d6">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label for="L_end_time" class="layui-form-label">结束时间</label>
                     <div class="layui-input-inline">
                         <input type="text" id="L_end_time" name="end_time" lay-verify="required" autocomplete="off"
-                            class="layui-input">
+                            class="layui-input" disabled="disabled" style="background:#d6d6d6">
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -245,11 +245,6 @@
                     format: 'HH点mm分',
                     trigger: 'click',
                     isInitValue: false,
-                    /*
-                    type: 'datetime',
-                    format: 'yyyy-MM-ddTHH:mm:ss',
-                    trigger: 'click',
-                    */
                 })
 
                 //自定义验证规则
@@ -266,7 +261,7 @@
                     }
                 });
 
-                // input like, 04:00
+                // input like, 04点00分
                 function time_format_modify(time) {
                     var hour = time.substring(0, 2);
                     var min = time.substring(3, 5);

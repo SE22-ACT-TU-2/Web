@@ -218,32 +218,41 @@
         return decodeURI(pair[1]);
     }
 
-    /*帖子-删除*/
-    function post_del(obj, id) {
-        //TODO:帖子不存在时如何提示？
-        layer.confirm('确认要删除吗？', function (index) {
-            //发异步删除数据
-            $.ajax(server + `web/post/${id}/`, {
-                method: 'DELETE',
-                headers: headers
-            }).done(function (data) {
-                $(obj).parents("tr").remove();
-                
+    function del_req(obj, id, silence) {
+        var result = false;
+        $.ajax(server + `web/post/${id}/`, {
+            method: 'DELETE',
+            headers: headers
+        }).done(function (data) {
+            $(obj).parents("tr").remove();
+            if (!silence) {
                 layer.msg('已删除!', { icon: 1, time: 1000 });
-            }).fail(function (xhr, status) {
-                console.log(xhr);
-                console.log(status);
+            }
+            result = true;
+        }).fail(function (xhr, status) {
+            console.log(xhr);
+            console.log(status);
+            if (!silence) {
                 if (xhr.status === 404) {
                     layer.msg('该帖子不存在', { icon: 5 });
                 }
                 else {
                     layer.msg("网络错误", { icon: 2 });
                 }
-            }).always(function () {
-                //layer.close(index);
-            });
+            }
+        }).always(function () {
+            //layer.close(index);
         });
-        
+        return result;
+    }
+
+    /*帖子-删除*/
+    function post_del(obj, id) {
+        //TODO:帖子不存在时如何提示？
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            del_req(obj, id, false);
+        });
     }
 
     function delAll(argument) {
