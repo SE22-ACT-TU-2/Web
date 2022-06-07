@@ -197,46 +197,12 @@
                     }
                 });
 
-                var upload = layui.upload;
-
-                //常规使用 - 普通图片上传
-
-                upload.render({
-                    elem: '#L_upload_image'
-                    , url: server + 'web/ground/add_ground/' //此处配置你自己的上传接口即可
-                    , auto: false
-                    //,multiple: true
-                    , bindAction: '#L_submit'
-                    , headers: {
-                        token: localStorage.token
-                    }
-                    ,contentType:"application/json;charset=UTF-8"
-                    ,before: function () {
-                        this.data = JSON.stringify(
-                        {
-                            id: $('#L_id').val(),
-                            apply_needed: $('#L_apply_needed').val(),
-                            area: $('#L_area').val(),
-                            begin_time: $('#L_begin_time').val(),
-                            description: $('#L_description').val(),
-                            end_time: $('#L_end_time').val(),
-                            name: $('#L_name').val(),
-                            price: $('#L_price').val()
-                        });// 看这里 看这里 看这里
-                        console.log(this.data)
-                    }
-                    , done: function (res) {
-                        layer.msg('上传成功');
-                        console.log(res);
-                        console.log(data);
-                    }
-                });
-
                 //监听提交
-                /*
+                
                 form.on('submit(add)',
                     function (data) {
                         console.log(data.field);
+                        data.field.file = $('#L_upload_image').attr('src');
                         $.ajax(server + 'web/ground/add_ground/', {
                             method: 'POST',
                             contentType: 'application/json',
@@ -273,7 +239,47 @@
                         });
                         return false;
                     });
+
+                var upload = layui.upload;
+
+                //常规使用 - 普通图片上传
+
+                upload.render({
+                    elem: '#L_upload_image'
+                    , url: server + 'web/ground/add_ground/' //此处配置你自己的上传接口即可
+                    , auto: false
+                    //,multiple: true
+                    , bindAction: '#L_submit'
+                    
+                    ,headers : {token: localStorage.token, 'Content-type' : 'application/json', Accept : 'application/json'}
+                    /*
+                    ,contentType:"application/json"
+                    ,method: 'POST'
+                    ,before: function () {
+                        this.data = {
+                            id: $('#L_id').val(),
+                            apply_needed: $('#L_apply_needed').val(),
+                            area: $('#L_area').val(),
+                            begin_time: $('#L_begin_time').val(),
+                            description: $('#L_description').val(),
+                            end_time: $('#L_end_time').val(),
+                            name: $('#L_name').val(),
+                            price: $('#L_price').val()
+                        }
+                    }
                     */
+                    , done: function (res) {
+                        layer.msg('上传成功');
+                        console.log(res);
+                        console.log(data);
+                    },
+                    error: function(res, index, upload) {
+                        layer.msg('上传失败');
+                    }
+                });
+
+                
+                    
                 /*
                 //监听提交
                 form.on('submit(add)',
