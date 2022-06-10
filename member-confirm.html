@@ -233,6 +233,11 @@
             }
         });
 
+        if (ids.length == 0) {
+            layer.msg('请勾选要批量通过的审核');
+            return false;
+        }
+
         // todo -- 批量通过/不通过
         layer.confirm('确认要全部通过吗？' + ids.toString(), function (index) {
             //捉到所有被选中的，发异步进行删除
