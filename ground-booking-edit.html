@@ -214,14 +214,25 @@
                             return '价格必须为大于等于0的数字';
                         }
                     },
-                    later_than_today: function (value) {
-
+                    later_than_today: function (new_date) {
+                        let cur_dateStr = new Date().toISOString().split('T')[0];
+                        if (new_date < cur_dateStr) {
+                            return '新预约日期不得早于今天';
+                        }
                     },
                     time_range: function(value) {
-                        var hour = value.substring(0, 2);
-                        var min = value.substring(3, 5);
-                        int hour parseFloat(hour);
-                        if (hour <)
+                        var s_hour = value.substring(0, 2);
+                        var s_min = value.substring(3, 5);
+                        var hour = parseInt(s_hour);
+                        var min = parseInt(s_min);
+                        console.log(s_hour, s_min, hour, min);
+                        if (hour < 8 || hour > 22) {
+                            return '预约时间段不得早于8点或晚于22点';
+                        } else if (hour == 22){
+                            if (min != 0) {
+                                return '预约时间段不得早于8点或晚于22点';
+                            }
+                        }
                     }
                 });
 
