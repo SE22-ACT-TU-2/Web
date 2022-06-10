@@ -1,59 +1,21 @@
+
+
 <!DOCTYPE html>
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <title>upload模块快速使用</title>
-    <link rel="stylesheet" href="/static/build/layui.css" media="all">
-    <script src="./lib/layui-v2.6.8/layui/layui.js" charset="utf-8"></script>
-    <script type="text/javascript" src="./js/xadmin.js"></script>
-    <script src="./js/jquery.min.js"></script>
-    <script src="./js/app.js"></script>
-    <script src="./lib/laydate/laydate.js"></script>
-</head>
-
 <body>
+    <form method="post" enctype="multipart/form-data" action="https://acttu2.2022martu1.cn/api/web/ground/add_ground_test/">
 
-    <button type="button" class="layui-btn" id="test1">
-        <i class="layui-icon">&#xe67c;</i>上传图片
-    </button>
-    <script>
-        layui.use('upload', function () {
-            var upload = layui.upload;
-
-            //执行实例
-            var uploadInst = upload.render({
-                elem: '#test1' //绑定元素
-                , url: server + 'web/ground/add_ground_test/' //上传接口
-                , done: function (res) {
-                    console.log(res);
-                    layer.alert("增加场地成功", {
-                        icon: 1,
-                        title: '提示'
-                    }, function (index) {
-                        layer.close(index);
-                        setTimeout(function () {
-                            $(".container").addClass("hidden");
-                            $(".page3").removeClass("hidden");
-                        }, 500)
-                        //关闭当前frame
-                        xadmin.close();
-                        // 可以对父窗口进行刷新
-                        xadmin.father_reload();
-                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                        parent.layer.close(index); //再执行关闭
-                    });
-                }
-                , error: function () {
-                    if (xhr.status === 400) {
-                        layer.msg(`场地 ${data.field.name} 已存在`, { icon: 5 });
-                    } else {
-                        layer.msg("网络错误", { icon: 2 });
-                    }
-                }
-            });
-        });
-    </script>
+        <div class="form-group">
+             <label for="icon_input">图像</label>
+             <input name="img" type="file" id="icon_input">
+         </div>
+         
+         
+         <button type="submit" class="btn btn-success btn-block">提交</button>
+         {%csrf_token%}
+     </form>
+    
 </body>
 
 </html>
