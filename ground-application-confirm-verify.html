@@ -76,9 +76,12 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="L_file" class="layui-form-label">
-                    审核材料</label>
-                <img id="L_file" height = 150, weight = 150/> 
+                <label for="L_file" class="layui-form-label"> 预约原因</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="L_file" name="file" autocomplete="off"
+                           class="layui-input" disabled="disabled"
+                           style="background:#d6d6d6">
+                </div>
             </div>
             <div class="layui-form-item">
                 <label for="L_verify_choices" class="layui-form-label"> 
@@ -128,10 +131,7 @@
                     $('#L_is_batch').val(is_batch);
                     $('#L_begin_time').val(data[0].begin_time.replace('T',' '));
                     $('#L_end_time').val(data[0].end_time.replace('T',' '));
-                    var image_src = "images/"+data[0].file;
-                    document.getElementById("L_file").src = image_src;
-                    //$('#L_student_card_image').append("<img src=" + image_src +" height = 100, weight = 100/>");
-                    //$('#L_avatar').val(data[0].avatar);
+                    $('#L_file').val(data[0].file); //booking reason
                 }).fail(function (xhr, status) {
                     console.log(xhr);
                     console.log(status);
