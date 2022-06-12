@@ -44,15 +44,9 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label for="L_avatar" class="layui-form-label">
-                        头像</label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="L_avatar" disabled="disabled" autocomplete="off" class="layui-input"
-                            style="background:#d6d6d6">
-                    </div>
-                    <div class="layui-form-mid layui-word-aux">
-                        <span class="x-red">*</span>不可更改
-                    </div>
+                    <label for="L_avatar" class="layui-form-label">头像</label>
+                    <img id="L_avatar" height=150, weight=150 />
+                    
                 </div>
                 <div class="layui-form-item">
                     <label for="L_email" class="layui-form-label">
@@ -162,13 +156,16 @@
                         var inBlacklist = $('#inBlacklist') ? true : false;
                         $('#L_id').val(data.id);
                         $('#L_name').val(data.name);
-                        $('#L_avatar').val(data.avatar);
                         $('#L_email').val(data.email);
                         $('#L_sign').val(data.sign);
                         $('#L_money').val(data.money);
                         $('#L_defaults_number').val(data.defaults_number);
                         //$('#L_inBlacklist').val(inBlacklist); 
                         $('#L_is_csstd').val(data.is_csstd);
+                        $('#L_avatar').val(data.avatar);
+                        var image_src = data.avatar;
+                        document.getElementById("L_avatar").src = image_src;
+
                         form.render(); //更新全部
 
 

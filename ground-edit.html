@@ -177,7 +177,7 @@
                         $('#L_end_time').val(time_format_modify(data[0].end_time.substring(0, 5)));
                         $('#L_description').val(data[0].description);
                         $('#L_image').val(data[0].avatar);
-                        var image_src = "images/" + data[0].avatar;
+                        var image_src = data[0].avatar;
                         document.getElementById("L_image").src = image_src;
                         form.render(); //更新全部
                     }).fail(function (xhr, status) {
