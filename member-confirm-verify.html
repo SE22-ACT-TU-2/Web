@@ -86,7 +86,7 @@
                     // member-confirm-verify信息回显
                     $('#L_student_id').val(data[0].student_id);
                     $('#L_name').val(data[0].name);
-                    var image_src = "images/"+data[0].avatar;
+                    var image_src = data[0].avatar;
                     document.getElementById("L_student_card_image").src = image_src;
                     //$('#L_student_card_image').append("<img src=" + image_src +" height = 100, weight = 100/>");
                     //$('#L_avatar').val(data[0].avatar);
